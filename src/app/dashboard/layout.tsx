@@ -15,7 +15,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -42,14 +42,14 @@ function NavLink({
   item: NavItem;
   pathname: string;
 }) {
-  const isParentActive = !!item.href && pathname.startsWith(item.href) && item.href !== '/dashboard';
+  const isParentActive =
+    !!item.href && pathname.startsWith(item.href) && item.href !== '/';
   const isActive = pathname === item.href;
   const [isOpen, setIsOpen] = useState(isParentActive);
 
   useEffect(() => {
     setIsOpen(isParentActive);
-  }, [isParentActive]);
-
+  }, [isParentActive, pathname]);
 
   if (item.children && item.children.length > 0) {
     return (
@@ -69,14 +69,14 @@ function NavLink({
             />
           </Button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="pl-4">
+        <CollapsibleContent className="pl-6">
           <nav className="grid gap-1 py-1">
             {item.children.map((child) => (
               <Link
                 key={child.label}
                 href={child.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
+                  'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary text-sm',
                   pathname === child.href ? 'bg-muted text-primary' : ''
                 )}
               >
@@ -118,57 +118,61 @@ export default function DashboardLayout({
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-16 items-center gap-2 border-b px-4 lg:px-6">
             <Logo />
-            <span className="font-semibold">Coursue</span>
+            <div className="flex flex-col">
+              <span className="font-semibold text-lg">Hiigsi</span>
+              <span className="text-xs text-muted-foreground">
+                ID: SCH-2025
+              </span>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             <nav className="grid items-start p-2 text-sm font-medium lg:p-4">
-              <span className='px-3 py-2 text-xs font-semibold text-muted-foreground'>OVERVIEW</span>
-              {navItems.slice(0, 5).map((item) => (
+              {navItems.map((item) => (
                 <NavLink key={item.label} item={item} pathname={pathname} />
               ))}
-               <span className='px-3 py-2 mt-4 text-xs font-semibold text-muted-foreground'>FRIENDS</span>
-                <div className='flex flex-col gap-2'>
-                  <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                      <Avatar className="h-8 w-8 border">
-                        <AvatarImage src="https://picsum.photos/seed/bagas/100" />
-                        <AvatarFallback>BM</AvatarFallback>
-                      </Avatar>
-                      <div className='flex flex-col'>
-                        <span className='font-semibold text-sm'>Bagas Mahpie</span>
-                        <span className='text-xs'>Friend</span>
-                      </div>
-                  </Link>
-                   <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                      <Avatar className="h-8 w-8 border">
-                        <AvatarImage src="https://picsum.photos/seed/dandy/100" />
-                        <AvatarFallback>SD</AvatarFallback>
-                      </Avatar>
-                      <div className='flex flex-col'>
-                        <span className='font-semibold text-sm'>Sir Dandy</span>
-                        <span className='text-xs'>Old Friend</span>
-                      </div>
-                  </Link>
-                   <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                      <Avatar className="h-8 w-8 border">
-                        <AvatarImage src="https://picsum.photos/seed/jhon/100" />
-                        <AvatarFallback>JT</AvatarFallback>
-                      </Avatar>
-                      <div className='flex flex-col'>
-                        <span className='font-semibold text-sm'>Jhon Tosan</span>
-                        <span className='text-xs'>Friend</span>
-                      </div>
-                  </Link>
-                </div>
-
             </nav>
           </div>
           <div className="mt-auto flex flex-col gap-4 p-4">
-             <nav className="grid items-start text-sm font-medium">
-               <span className='px-3 py-2 text-xs font-semibold text-muted-foreground'>SETTINGS</span>
-                {navItems.slice(5).map((item) => (
-                    <NavLink key={item.label} item={item} pathname={pathname} />
-                ))}
-            </nav>
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold">Need support?</h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Contact our admin for assistance.
+                </p>
+                <Button size="sm" className="w-full mt-3">
+                  Contact Admin
+                </Button>
+              </CardContent>
+            </Card>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex h-auto items-center justify-start gap-3 p-2"
+                >
+                  <Avatar className="h-10 w-10 border">
+                    <AvatarImage src="https://picsum.photos/seed/principal/100" />
+                    <AvatarFallback>PA</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col items-start">
+                    <span className="font-semibold">Principal</span>
+                    <span className="text-xs text-muted-foreground">
+                      admin@hiigsi.com
+                    </span>
+                  </div>
+                  <MoreHorizontal className="ml-auto h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel>Principal Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -188,56 +192,32 @@ export default function DashboardLayout({
             <SheetContent side="left" className="flex flex-col p-0">
               <div className="flex h-16 items-center gap-2 border-b px-4">
                 <Logo />
-                <span className="font-semibold">Coursue</span>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-lg">Hiigsi</span>
+                  <span className="text-xs text-muted-foreground">
+                    ID: SCH-2025
+                  </span>
+                </div>
               </div>
-              <div className="flex-1 overflow-y-auto">
-                 <nav className="grid items-start p-2 text-sm font-medium lg:p-4">
-                    <span className='px-3 py-2 text-xs font-semibold text-muted-foreground'>OVERVIEW</span>
-                    {navItems.slice(0, 5).map((item) => (
-                      <NavLink key={item.label} item={item} pathname={pathname} />
-                    ))}
-                    <span className='px-3 py-2 mt-4 text-xs font-semibold text-muted-foreground'>FRIENDS</span>
-                      <div className='flex flex-col gap-2'>
-                        <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                            <Avatar className="h-8 w-8 border">
-                              <AvatarImage src="https://picsum.photos/seed/bagas/100" />
-                              <AvatarFallback>BM</AvatarFallback>
-                            </Avatar>
-                            <div className='flex flex-col'>
-                              <span className='font-semibold text-sm'>Bagas Mahpie</span>
-                              <span className='text-xs'>Friend</span>
-                            </div>
-                        </Link>
-                        <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                            <Avatar className="h-8 w-8 border">
-                              <AvatarImage src="https://picsum.photos/seed/dandy/100" />
-                              <AvatarFallback>SD</AvatarFallback>
-                            </Avatar>
-                            <div className='flex flex-col'>
-                              <span className='font-semibold text-sm'>Sir Dandy</span>
-                              <span className='text-xs'>Old Friend</span>
-                            </div>
-                        </Link>
-                        <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                            <Avatar className="h-8 w-8 border">
-                              <AvatarImage src="https://picsum.photos/seed/jhon/100" />
-                              <AvatarFallback>JT</AvatarFallback>
-                            </Avatar>
-                            <div className='flex flex-col'>
-                              <span className='font-semibold text-sm'>Jhon Tosan</span>
-                              <span className='text-xs'>Friend</span>
-                            </div>
-                        </Link>
-                      </div>
-                  </nav>
-              </div>
-              <div className="mt-auto flex flex-col gap-4 p-4">
-                 <nav className="grid items-start text-sm font-medium">
-                  <span className='px-3 py-2 text-xs font-semibold text-muted-foreground'>SETTINGS</span>
-                  {navItems.slice(5).map((item) => (
-                      <NavLink key={item.label} item={item} pathname={pathname} />
+              <div className="flex-1 overflow-y-auto p-4">
+                <nav className="grid items-start text-sm font-medium">
+                  {navItems.map((item) => (
+                    <NavLink key={item.label} item={item} pathname={pathname} />
                   ))}
                 </nav>
+              </div>
+              <div className="mt-auto flex flex-col gap-4 p-4 border-t">
+                 <Card>
+                  <CardContent className="p-4">
+                    <h3 className="text-sm font-semibold">Need support?</h3>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Contact our admin for assistance.
+                    </p>
+                    <Button size="sm" className="w-full mt-3">
+                      Contact Admin
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             </SheetContent>
           </Sheet>
@@ -247,7 +227,7 @@ export default function DashboardLayout({
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   className="w-full appearance-none bg-background pl-10 md:w-2/3 lg:w-1/3"
-                  placeholder="Search your course..."
+                  placeholder="Search..."
                 />
               </div>
             </form>
@@ -259,15 +239,18 @@ export default function DashboardLayout({
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                   <Avatar className="h-10 w-10 border">
-                    <AvatarImage src="https://picsum.photos/seed/jason/100" />
-                    <AvatarFallback>JR</AvatarFallback>
+                <Button
+                  variant="ghost"
+                  className="relative h-10 w-10 rounded-full"
+                >
+                  <Avatar className="h-10 w-10 border">
+                    <AvatarImage src="https://picsum.photos/seed/principal/100" />
+                    <AvatarFallback>PA</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Jason Ranti</DropdownMenuLabel>
+                <DropdownMenuLabel>Principal Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
@@ -277,7 +260,7 @@ export default function DashboardLayout({
             </DropdownMenu>
           </div>
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-8 bg-background">
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-8 bg-muted/40">
           {children}
         </main>
       </div>
