@@ -109,6 +109,8 @@ const customerChartConfig = {
   },
 } satisfies ChartConfig;
 
+const renderNull = () => null;
+
 export default function Dashboard() {
   const totalActivity = productActivityData.reduce((acc, curr) => acc + curr.value, 0);
 
@@ -186,7 +188,7 @@ export default function Dashboard() {
                     <Cell key={entry.name} fill={productChartConfig[entry.name as keyof typeof productChartConfig].color} />
                   ))}
                 </Pie>
-                <Legend content={<></>} />
+                <Legend content={renderNull} />
                 <text
                   x="50%"
                   y="50%"
