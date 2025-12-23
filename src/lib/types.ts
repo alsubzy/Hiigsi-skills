@@ -17,7 +17,7 @@ export type User = {
   email: string;
   role: 'Admin' | 'Teacher' | 'Parent' | 'Student';
   status: 'Active' | 'Deactivated';
-  lastLogin: string;
+  createdDate: string;
 };
 
 export type NavItem = {

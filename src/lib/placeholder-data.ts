@@ -26,10 +26,9 @@ export const navItems: NavItem[] = [
     href: '/dashboard/users',
     children: [
       { label: 'Users', href: '/dashboard/users' },
-      { label: 'Roles & Permissions', href: '#' },
-      { label: 'Staff Management', href: '#' },
-      { label: 'Parents', href: '#' },
-      { label: 'User Activity Logs', href: '#' },
+      { label: 'Roles & Permissions', href: '/dashboard/users/roles' },
+      { label: 'Staff Management', href: '/dashboard/users/staff' },
+      { label: 'User Activity Logs', href: '/dashboard/users/logs' },
     ],
   },
   {
@@ -193,7 +192,7 @@ export const users: User[] = [
         email: 'nathan.scott@example.com',
         role: 'Admin',
         status: 'Active',
-        lastLogin: '2 hours ago'
+        createdDate: '2023-01-15'
     },
     {
         id: '2',
@@ -202,7 +201,7 @@ export const users: User[] = [
         email: 'jane.doe@example.com',
         role: 'Teacher',
         status: 'Active',
-        lastLogin: '1 day ago'
+        createdDate: '2023-02-20'
     },
     {
         id: '3',
@@ -211,7 +210,7 @@ export const users: User[] = [
         email: 'john.smith@example.com',
         role: 'Parent',
         status: 'Active',
-        lastLogin: '30 minutes ago'
+        createdDate: '2023-03-10'
     },
     {
         id: '4',
@@ -220,7 +219,7 @@ export const users: User[] = [
         email: 'emily.white@example.com',
         role: 'Student',
         status: 'Deactivated',
-        lastLogin: '5 days ago'
+        createdDate: '2023-04-05'
     },
      {
         id: '5',
@@ -229,7 +228,34 @@ export const users: User[] = [
         email: 'michael.brown@example.com',
         role: 'Teacher',
         status: 'Active',
-        lastLogin: '1 hour ago'
+        createdDate: '2023-05-12'
+    },
+    {
+        id: '6',
+        name: 'Sarah Wilson',
+        avatar: 'https://picsum.photos/seed/sarah/100',
+        email: 'sarah.wilson@example.com',
+        role: 'Admin',
+        status: 'Active',
+        createdDate: '2023-06-18'
+    },
+    {
+        id: '7',
+        name: 'David Jones',
+        avatar: 'https://picsum.photos/seed/david/100',
+        email: 'david.jones@example.com',
+        role: 'Parent',
+        status: 'Deactivated',
+        createdDate: '2023-07-22'
+    },
+    {
+        id: '8',
+        name: 'Laura Taylor',
+        avatar: 'https://picsum.photos/seed/laura/100',
+        email: 'laura.taylor@example.com',
+        role: 'Teacher',
+        status: 'Active',
+        createdDate: '2023-08-30'
     }
 ];
 
