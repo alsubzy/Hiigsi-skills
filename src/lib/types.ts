@@ -72,8 +72,17 @@ export type Subject = {
   id: string;
   name: string;
   classId: string;
-  teacher?: string;
+  teacherId?: string;
+  teacher?: string; // This can be deprecated if teacherId is used
   status: 'Active' | 'Inactive';
+};
+
+export type AcademicYear = {
+    id: string;
+    name: string;
+    startDate: Date;
+    endDate: Date;
+    isCurrent: boolean;
 };
 
 export type CalendarEvent = {
@@ -82,12 +91,21 @@ export type CalendarEvent = {
   date: Date;
   type: 'event' | 'exam' | 'holiday';
   description: string;
+  academicYearId?: string;
 };
 
 export type TimetableEntry = {
-  day: string;
-  [time: string]: { subject: string, teacher: string } | string;
+    day: string;
+    [time: string]: { subjectId: string; teacherId: string; subject: string; teacher: string; } | string;
 };
+
+export type Timetable = {
+    id: string;
+    classId: string;
+    sectionId: string;
+    entries: TimetableEntry[];
+};
+
 
 export type Syllabus = {
     id: string;
@@ -97,6 +115,7 @@ export type Syllabus = {
     subjectId: string;
     term: string;
     status: 'Not Started' | 'In Progress' | 'Completed';
+    chapters?: { title: string; topics: string[] }[];
 }
 
 export type Student = {
