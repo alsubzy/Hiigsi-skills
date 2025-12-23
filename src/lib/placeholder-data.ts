@@ -1,3 +1,4 @@
+'use server';
 import {
   Home,
   Users,
@@ -114,13 +115,13 @@ export const navItems: NavItem[] = [
   {
     label: 'System Settings',
     icon: Settings,
-    href: '#',
+    href: '/dashboard/settings',
     children: [
-      { label: 'School Profile', href: '#' },
-      { label: 'Academic Year', href: '#' },
-      { label: 'User Settings', href: '#' },
-      { label: 'Backup & Restore', href: '#' },
-      { label: 'Audit Logs', href: '#' },
+      { label: 'School Profile', href: '/dashboard/settings/school-profile' },
+      { label: 'Academic Year', href: '/dashboard/settings/academic-year' },
+      { label: 'User Settings', href: '/dashboard/settings/user-settings' },
+      { label: 'Backup & Restore', href: '/dashboard/settings/backup' },
+      { label: 'Audit Logs', href: '/dashboard/settings/audit-logs' },
     ],
   },
 ];
@@ -296,4 +297,6 @@ export const notifications = [
     { id: 'not3', icon: Wallet, title: 'Fee Payment Due', description: 'The fee for the next term is due on December 1st.', time: '3d ago', read: true },
     { id: 'not4', icon: MessageSquare, title: 'New Message Received', description: 'You have a new message from Ms. Maria Garcia.', time: '5d ago', read: true },
 ];
+    
+
     
