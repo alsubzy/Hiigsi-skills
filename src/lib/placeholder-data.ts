@@ -13,6 +13,9 @@ import {
   CalendarCheck,
   ArrowUp,
   Megaphone,
+  MessageSquare,
+  Bell,
+  Rss,
 } from 'lucide-react';
 import type { NavItem, User, AcademicClass, Section, Subject, CalendarEvent, TimetableEntry, Syllabus, Student, Attendance } from './types';
 
@@ -97,6 +100,11 @@ export const navItems: NavItem[] = [
     label: 'Communication',
     icon: Megaphone,
     href: '/dashboard/communication',
+     children: [
+      { label: 'Announcements', href: '/dashboard/communication/announcements' },
+      { label: 'Messaging', href: '/dashboard/communication/messaging' },
+      { label: 'Notifications', href: '/dashboard/communication/notifications' },
+    ],
   },
   {
     label: 'Reports & Analytics',
@@ -256,4 +264,36 @@ export const initialAttendance: Attendance[] = students
         status: ['present', 'absent', 'late', 'excused'][Math.floor(Math.random() * 4)] as 'present' | 'absent' | 'late' | 'excused',
     }));
 
+export const announcements = [
+    { id: 'an1', title: 'Annual Sports Day', content: 'The annual sports day will be held on December 15th. All students are requested to participate.', author: 'Mr. David Chen', date: '2024-11-20', read: false },
+    { id: 'an2', title: 'Parent-Teacher Meeting', content: 'A parent-teacher meeting is scheduled for November 30th to discuss student progress.', author: 'Dr. Evelyn Reed', date: '2024-11-18', read: true },
+    { id: 'an3', title: 'Winter Holiday Schedule', content: 'The school will be closed for winter holidays from December 22nd to January 5th.', author: 'Admin Office', date: '2024-11-15', read: true },
+];
+
+export const conversations = [
+    { 
+        id: 'conv1', 
+        contact: 'Mr. David Chen', 
+        avatar: 'https://picsum.photos/seed/davidc/100',
+        messages: [
+            { sender: 'You', text: 'Hi Mr. Chen, can we discuss the math curriculum for Grade 7?', time: '10:30 AM' },
+            { sender: 'Mr. David Chen', text: 'Sure, I am available this afternoon.', time: '10:32 AM' },
+        ]
+    },
+    { 
+        id: 'conv2', 
+        contact: 'Ms. Maria Garcia', 
+        avatar: 'https://picsum.photos/seed/mariag/100',
+        messages: [
+            { sender: 'Ms. Maria Garcia', text: 'Just a reminder that the library will be closed for stock-taking tomorrow.', time: 'Yesterday' },
+        ]
+    },
+];
+
+export const notifications = [
+    { id: 'not1', icon: Rss, title: 'New Announcement Posted', description: 'Annual Sports Day details are up.', time: '2h ago', read: false },
+    { id: 'not2', icon: FileText, title: 'Exam Schedule Updated', description: 'The schedule for the final exams has been posted.', time: '1d ago', read: false },
+    { id: 'not3', icon: Wallet, title: 'Fee Payment Due', description: 'The fee for the next term is due on December 1st.', time: '3d ago', read: true },
+    { id: 'not4', icon: MessageSquare, title: 'New Message Received', description: 'You have a new message from Ms. Maria Garcia.', time: '5d ago', read: true },
+];
     
