@@ -292,3 +292,14 @@ export type Announcement = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+// --- Reports & Analytics Module Types ---
+
+export type GeneratedReport = {
+    id: string;
+    name: string;
+    type: 'Finance' | 'Academic' | 'Examination' | 'Administrative';
+    date: Date;
+    status: 'Generated' | 'Archived';
+    generatedBy: string; // userId
+};
