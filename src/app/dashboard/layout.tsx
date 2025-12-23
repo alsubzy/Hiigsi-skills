@@ -43,7 +43,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { navItems } from '@/lib/placeholder-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import React from 'react';
 import { QuanticoLogo } from '@/components/quantico-logo';
 import { NavItem } from '@/lib/types';
@@ -56,9 +56,14 @@ function NavLink({
   item: NavItem;
   pathname: string;
 }) {
-  const [isOpen, setIsOpen] = useState(pathname.startsWith(item.href));
-  const isParentActive = pathname.startsWith(item.href) && item.href !== '/dashboard';
+  const isParentActive = !!item.href && pathname.startsWith(item.href) && item.href !== '/dashboard';
   const isActive = pathname === item.href;
+  const [isOpen, setIsOpen] = useState(isParentActive);
+
+  useEffect(() => {
+    setIsOpen(isParentActive);
+  }, [isParentActive]);
+
 
   if (item.children && item.children.length > 0) {
     return (
