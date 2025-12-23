@@ -3,15 +3,13 @@ import {
   Users,
   BookOpen,
   GraduationCap,
-  CalendarCheck,
   Wallet,
   Library,
   BarChart3,
-  ShieldCheck,
   Settings,
   ClipboardCheck,
 } from 'lucide-react';
-import type { NavItem, Student, User } from './types';
+import type { NavItem, User, AcademicClass, Section, Subject, CalendarEvent, TimetableEntry, Syllabus } from './types';
 
 
 export const navItems: NavItem[] = [
@@ -36,12 +34,12 @@ export const navItems: NavItem[] = [
     icon: BookOpen,
     href: '/dashboard/academics',
     children: [
-      { label: 'Classes / Grades', href: '/dashboard/academics' },
-      { label: 'Sections', href: '#' },
-      { label: 'Subjects', href: '#' },
-      { label: 'Academic Calendar', href: '#' },
-      { label: 'Class Timetable', href: '#' },
-      { label: 'Syllabus Management', href: '#' },
+      { label: 'Classes / Grades', href: '/dashboard/academics/classes' },
+      { label: 'Sections', href: '/dashboard/academics/sections' },
+      { label: 'Subjects', href: '/dashboard/academics/subjects' },
+      { label: 'Academic Calendar', href: '/dashboard/academics/calendar' },
+      { label: 'Class Timetable', href: '/dashboard/academics/timetable' },
+      { label: 'Syllabus Management', href: '/dashboard/academics/syllabus' },
     ],
   },
   {
@@ -58,7 +56,7 @@ export const navItems: NavItem[] = [
   },
   {
     label: 'Teacher Management',
-    icon: Users, // Placeholder, consider a more specific icon
+    icon: Users,
     href: '#',
     children: [
       { label: 'Teachers', href: '#' },
@@ -126,63 +124,6 @@ export const navItems: NavItem[] = [
   },
 ];
 
-
-export const students: Student[] = [
-  {
-    id: '1',
-    name: 'Liam Smith',
-    avatar: 'https://picsum.photos/seed/liam/100',
-    studentId: 'ST-2024-001',
-    grade: '10',
-    parentName: 'John Smith',
-    status: 'Active',
-  },
-  {
-    id: '2',
-    name: 'Lily Thompson',
-    avatar: 'https://picsum.photos/seed/lily/100',
-    studentId: 'ST-2024-002',
-    grade: '11',
-    parentName: 'Sarah Thompson',
-    status: 'Active',
-  },
-  {
-    id: '3',
-    name: 'Lucas Young',
-    avatar: 'https://picsum.photos/seed/lucas/100',
-    studentId: 'ST-2024-003',
-    grade: '9',
-    parentName: 'David Young',
-    status: 'Inactive',
-  },
-  {
-    id: '4',
-    name: 'Isabella Garcia',
-    avatar: 'https://picsum.photos/seed/isabella/100',
-    studentId: 'ST-2024-004',
-    grade: '12',
-    parentName: 'Maria Garcia',
-    status: 'Active',
-  },
-  {
-    id: '5',
-    name: 'Amelia Davis',
-    avatar: 'https://picsum.photos/seed/amelia/100',
-    studentId: 'ST-2024-005',
-    grade: '10',
-    parentName: 'James Davis',
-    status: 'Active',
-  },
-   {
-    id: '6',
-    name: 'Caleb Turner',
-    avatar: 'https://picsum.photos/seed/caleb/100',
-    studentId: 'ST-2024-006',
-    grade: '11',
-    parentName: 'Robert Turner',
-    status: 'Inactive',
-  },
-];
 
 export const users: User[] = [
     {
@@ -259,76 +200,49 @@ export const users: User[] = [
     }
 ];
 
-export const kpis = [
-  {
-    title: 'Nominal Balance',
-    value: '$2,450,900',
-    change: '+15.06%',
-    chartData: [{ value: 10 }, { value: 20 }, { value: 15 }, { value: 30 }, { value: 25 }, { value: 40 }],
-  },
-  {
-    title: 'Total Stock Product',
-    value: '821,900',
-    change: '-3.12%',
-    chartData: [{ value: 40 }, { value: 35 }, { value: 30 }, { value: 25 }, { value: 20 }, { value: 15 }],
-  },
-  {
-    title: 'Nominal Revenue',
-    value: '$1,250,000',
-    change: '+8.75%',
-    chartData: [{ value: 5 }, { value: 15 }, { value: 10 }, { value: 25 }, { value: 20 }, { value: 35 }],
-  },
-  {
-    title: 'Nominal Expense',
-    value: '$750,900',
-    change: '+12.45%',
-    chartData: [{ value: 12 }, { value: 18 }, { value: 15 }, { value: 22 }, { value: 20 }, { value: 28 }],
-  },
+export const academicClasses: AcademicClass[] = [
+    { id: 'c1', name: 'Grade 1', level: 'Primary', status: 'Active' },
+    { id: 'c2', name: 'Grade 2', level: 'Primary', status: 'Active' },
+    { id: 'c3', name: 'Grade 7', level: 'Secondary', status: 'Active' },
+    { id: 'c4', name: 'Grade 10', level: 'High School', status: 'Inactive' },
+    { id: 'c5', name: 'Grade 12', level: 'High School', status: 'Active' },
 ];
 
-export const productActivityData = [
-  { name: 'To Be Packed', value: 400 },
-  { name: 'Process Delivery', value: 300 },
-  { name: 'Delivery Done', value: 300 },
-  { name: 'Returned', value: 200 },
+export const sections: Section[] = [
+    { id: 's1', name: 'Section A', classId: 'c1', capacity: 30, status: 'Active' },
+    { id: 's2', name: 'Section B', classId: 'c1', capacity: 30, status: 'Active' },
+    { id: 's3', name: 'Section A', classId: 'c3', capacity: 25, status: 'Active' },
+    { id: 's4', name: 'Section C', classId: 'c5', capacity: 28, status: 'Inactive' },
 ];
 
-export const customerActivityData = [
-  { month: 'Apr 2025', paid: 2400, checkout: 4400 },
-  { month: 'May 2025', paid: 1398, checkout: 4210 },
-  { month: 'Jun 2025', paid: 9800, checkout: 4290 },
-  { month: 'Jul 2025', paid: 3908, checkout: 4000 },
-  { month: 'Aug 2025', paid: 4800, checkout: 4181 },
-  { month: 'Sep 2025', paid: 3800, checkout: 4500 },
-  { month: 'Oct 2025', paid: 4300, checkout: 4100 },
+export const subjects: Subject[] = [
+    { id: 'sub1', name: 'Mathematics', classId: 'c1', teacher: 'Jane Doe', status: 'Active' },
+    { id: 'sub2', name: 'Science', classId: 'c3', teacher: 'Michael Brown', status: 'Active' },
+    { id: 'sub3', name: 'History', classId: 'c3', teacher: 'Laura Taylor', status: 'Active' },
+    { id: 'sub4', name: 'English', classId: 'c5', teacher: 'Jane Doe', status: 'Inactive' },
+    { id: 'sub5', name: 'Computer Science', classId: 'c5', teacher: 'Michael Brown', status: 'Active' },
 ];
 
-export const recentTransactions = [
-  {
-    orderId: '#273640',
-    product: { name: 'Nike Sport', desc: 'Running Shoes', image: 'https://picsum.photos/seed/nike/40' },
-    price: '$120.50',
-    customer: { name: 'John Smith', avatar: 'https://picsum.photos/seed/john-smith/40' },
-    date: '12-10-2025',
-    payment: { method: 'visa', last4: '4242' },
-    email: 'johnsmith@example.com',
-  },
-  {
-    orderId: '#273641',
-    product: { name: 'Adidas Ultraboost', desc: 'Lifestyle Shoes', image: 'https://picsum.photos/seed/adidas/40' },
-    price: '$180.00',
-    customer: { name: 'Jane Doe', avatar: 'https://picsum.photos/seed/jane-doe/40' },
-    date: '12-10-2025',
-    payment: { method: 'mastercard', last4: '5555' },
-    email: 'janedoe@example.com',
-  },
-  {
-    orderId: '#273642',
-    product: { name: 'Puma Suede', desc: 'Classic Sneakers', image: 'https://picsum.photos/seed/puma/40' },
-    price: '$75.00',
-    customer: { name: 'Mike Johnson', avatar: 'https://picsum.photos/seed/mike-j/40' },
-    date: '11-10-2025',
-    payment: { method: 'stripe', last4: '9876' },
-    email: 'mike.j@example.com',
-  },
+export const calendarEvents: CalendarEvent[] = [
+    { id: 'e1', title: 'First Day of School', date: new Date(2024, 8, 2), type: 'event', description: 'Start of the new academic year.' },
+    { id: 'e2', title: 'Mid-term Exams', date: new Date(2024, 10, 15), type: 'exam', description: 'Mid-term examinations for all grades.' },
+    { id: 'e3', title: 'Winter Break', date: new Date(2024, 11, 22), type: 'holiday', description: 'School closed for winter holidays.' },
+    { id: 'e4', title: 'Parent-Teacher Meeting', date: new Date(2024, 9, 5), type: 'event', description: 'Meeting to discuss student progress.' },
+];
+
+export const timetableData: TimetableEntry[] = [
+  { day: 'Monday', '09:00': { subject: 'Math', teacher: 'Mr. Smith' }, '10:00': { subject: 'Science', teacher: 'Ms. Jones' }, '11:00': { subject: 'English', teacher: 'Ms. Davis' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'History', teacher: 'Mr. Brown' }, '14:00': { subject: 'Art', teacher: 'Ms. White' } },
+  { day: 'Tuesday', '09:00': { subject: 'Science', teacher: 'Ms. Jones' }, '10:00': { subject: 'History', teacher: 'Mr. Brown' }, '11:00': { subject: 'Math', teacher: 'Mr. Smith' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'PE', teacher: 'Mr. Green' }, '14:00': { subject: 'English', teacher: 'Ms. Davis' } },
+  { day: 'Wednesday', '09:00': { subject: 'English', teacher: 'Ms. Davis' }, '10:00': { subject: 'Math', teacher: 'Mr. Smith' }, '11:00': { subject: 'Music', teacher: 'Ms. Melody' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'Science', teacher: 'Ms. Jones' }, '14:00': { subject: 'History', teacher: 'Mr. Brown' } },
+  { day: 'Thursday', '09:00': { subject: 'History', teacher: 'Mr. Brown' }, '10:00': { subject: 'PE', teacher: 'Mr. Green' }, '11:00': { subject: 'Science', teacher: 'Ms. Jones' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'English', teacher: 'Ms. Davis' }, '14:00': { subject: 'Math', teacher: 'Mr. Smith' } },
+  { day: 'Friday', '09:00': { subject: 'PE', teacher: 'Mr. Green' }, '10:00': { subject: 'English', teacher: 'Ms. Davis' }, '11:00': { subject: 'Math', teacher: 'Mr. Smith' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'Music', teacher: 'Ms. Melody' }, '14:00': { subject: 'Science', teacher: 'Ms. Jones' } },
+];
+export const timeSlots = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00'];
+
+
+export const syllabusData: Syllabus[] = [
+    { id: 'syl1', title: 'Algebra Basics', classId: 'c3', subjectId: 'sub2', description: 'Introduction to variables, equations, and functions.', term: 'First Term', status: 'Completed' },
+    { id: 'syl2', title: 'Cellular Biology', classId: 'c3', subjectId: 'sub2', description: 'Study of cell structure, function, and reproduction.', term: 'First Term', status: 'In Progress' },
+    { id: 'syl3', title: 'World War I', classId: 'c3', subjectId: 'sub3', description: 'Causes, events, and consequences of the Great War.', term: 'Second Term', status: 'Not Started' },
+    { id: 'syl4', title: 'Shakespearean Sonnets', classId: 'c5', subjectId: 'sub4', description: 'Analysis of Shakespeare\'s sonnets.', term: 'First Term', status: 'Completed' },
 ];
