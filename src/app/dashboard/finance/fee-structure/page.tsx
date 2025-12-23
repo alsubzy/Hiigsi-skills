@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormState } from 'react-dom';
+import { useActionState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -32,7 +32,6 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Loader2, Sparkles, Wand2 } from 'lucide-react';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
@@ -48,7 +47,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function FeeStructurePage() {
   const { toast } = useToast();
   const initialState: FormState = { message: '', result: null };
-  const [state, formAction] = useFormState(suggestFeesAction, initialState);
+  const [state, formAction, isPending] = useActionState(suggestFeesAction, initialState);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -70,8 +69,6 @@ export default function FeeStructurePage() {
       });
     }
   }, [state, toast]);
-
-  const { isSubmitting } = form.formState;
 
   return (
     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
@@ -175,8 +172,8 @@ export default function FeeStructurePage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? (
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <Sparkles className="mr-2 h-4 w-4" />
