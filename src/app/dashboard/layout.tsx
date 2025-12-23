@@ -228,6 +228,7 @@ export default function DashboardLayout({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Principal Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
               </DropdownMenuContent>
