@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
+import { Auth } from 'firebase/auth';
 
 import { initializeFirebase, FirebaseProvider } from '@/firebase';
 
@@ -17,6 +18,7 @@ type FirebaseClientProviderProps = {
 type FirebaseInstances = {
   firebaseApp: FirebaseApp;
   firestore: Firestore;
+  auth: Auth;
 };
 
 /**
@@ -42,6 +44,7 @@ export function FirebaseClientProvider({
     <FirebaseProvider
       firebaseApp={firebase.firebaseApp}
       firestore={firebase.firestore}
+      auth={firebase.auth}
     >
       {children}
     </FirebaseProvider>
