@@ -14,7 +14,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -45,10 +44,20 @@ function NavLink({
     (!!item.href && pathname.startsWith(item.href) && item.href !== '/dashboard');
   const isActive = pathname === item.href;
   const [isOpen, setIsOpen] = useState(isParentActive);
+  
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     setIsOpen(isParentActive);
   }, [isParentActive, pathname]);
+
+  if (!isClient) {
+    return null;
+  }
 
   if (item.children && item.children.length > 0) {
     return (
@@ -56,7 +65,7 @@ function NavLink({
         <CollapsibleTrigger asChild>
           <Button
             variant={isParentActive ? 'secondary' : 'ghost'}
-            className="w-full justify-start gap-3 rounded-lg px-3 py-6 text-base"
+            className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium"
           >
             <item.icon className="h-5 w-5" />
             {item.label}
@@ -68,15 +77,15 @@ function NavLink({
             />
           </Button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="pl-8 border-l-2 border-primary ml-[22px]">
-          <nav className="grid gap-2 py-2">
+        <CollapsibleContent className="pl-8 border-l-2 ml-[22px]">
+          <nav className="grid gap-1 py-2">
             {item.children.map((child) => (
               <Link
                 key={child.label}
                 href={child.href}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary text-sm',
-                  pathname === child.href ? 'bg-secondary text-primary font-medium' : ''
+                  pathname === child.href ? 'bg-muted text-primary font-medium' : ''
                 )}
               >
                 {child.label}
@@ -93,8 +102,8 @@ function NavLink({
       key={item.label}
       href={item.href}
       className={cn(
-        'flex items-center gap-3 rounded-lg px-3 py-6 text-base text-muted-foreground transition-all hover:text-primary',
-        isActive ? 'bg-secondary text-primary font-semibold' : '',
+        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:text-primary',
+        isActive ? 'bg-muted text-primary font-semibold' : '',
         
       )}
     >
@@ -125,18 +134,18 @@ export default function DashboardLayout({
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
-            <nav className="grid items-start p-2 text-sm font-medium lg:p-4">
+            <nav className="grid items-start gap-1 p-2 text-sm font-medium lg:p-4">
               {navItems.map((item) => (
                 <NavLink key={item.label} item={item} pathname={pathname} />
               ))}
             </nav>
           </div>
-          <div className="mt-auto flex flex-col gap-4 p-4">
+          <div className="mt-auto p-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex h-auto items-center justify-start gap-3 p-2"
+                  className="flex h-auto items-center justify-start gap-3 p-2 w-full"
                 >
                   <Avatar className="h-10 w-10 border">
                     <AvatarImage src="https://picsum.photos/seed/principal/100" />
