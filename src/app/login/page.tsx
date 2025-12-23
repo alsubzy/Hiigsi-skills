@@ -54,6 +54,9 @@ export default function LoginPage() {
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
     try {
+      if (!auth) {
+        throw new Error('Firebase Auth is not initialized.');
+      }
       await signInWithEmailAndPassword(auth, values.email, values.password);
       router.push('/dashboard');
     } catch (error: any) {
