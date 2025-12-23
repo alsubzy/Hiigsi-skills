@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   Bell,
   ChevronDown,
@@ -9,7 +9,6 @@ import {
   Search,
   LogOut,
 } from 'lucide-react';
-import Image from 'next/image';
 import {
   Popover,
   PopoverContent,
@@ -33,11 +32,6 @@ import { useState, useEffect } from 'react';
 import React from 'react';
 import { NavItem } from '@/lib/types';
 import { Logo } from '@/components/logo';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/firebase';
-import { signOut } from 'firebase/auth';
-import { useUser } from '@/firebase/auth/use-user';
-import { Loader2 } from 'lucide-react';
 
 function NavLink({
   item,
@@ -117,40 +111,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { toast } = useToast();
-  const auth = useAuth();
-  const { user, isLoading } = useUser();
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login');
-    }
-  }, [isLoading, user, router]);
-
-  const handleLogout = async () => {
-    if (auth) {
-      try {
-        await signOut(auth);
-        toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
-        router.push('/login');
-      } catch (error) {
-        toast({ title: 'Logout Failed', description: 'Could not log you out. Please try again.', variant: 'destructive' });
-      }
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null; // or a redirect component
-  }
 
   return (
     <div className="grid h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
@@ -180,28 +140,23 @@ export default function DashboardLayout({
                   className="flex h-auto items-center justify-start gap-3 p-2 w-full"
                 >
                   <Avatar className="h-10 w-10 border">
-                    <AvatarImage src={user.photoURL || "https://picsum.photos/seed/principal/100"} />
-                    <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={"https://picsum.photos/seed/principal/100"} />
+                    <AvatarFallback>P</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start">
-                    <span className="font-semibold">{user.displayName || 'Principal'}</span>
+                    <span className="font-semibold">Principal</span>
                     <span className="text-xs text-muted-foreground">
-                      {user.email}
+                      principal@hiigsi.edu
                     </span>
                   </div>
                   <MoreHorizontal className="ml-auto h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel>{user.displayName || 'Principal'} Account</DropdownMenuLabel>
+                <DropdownMenuLabel>Principal Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -265,21 +220,16 @@ export default function DashboardLayout({
                   className="relative h-10 w-10 rounded-full"
                 >
                   <Avatar className="h-10 w-10 border">
-                    <AvatarImage src={user.photoURL || "https://picsum.photos/seed/principal/100"} />
-                    <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={"https://picsum.photos/seed/principal/100"} />
+                    <AvatarFallback>P</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{user.displayName || 'Principal'} Account</DropdownMenuLabel>
+                <DropdownMenuLabel>Principal Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
