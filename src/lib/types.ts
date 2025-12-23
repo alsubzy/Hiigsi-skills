@@ -318,3 +318,44 @@ export type SchoolProfile = {
     mission: string;
     logoUrl?: string;
 };
+
+// --- Finance & Fees Module Types ---
+
+export type FeeStructure = {
+  id: string;
+  classId: string;
+  academicYear: string;
+  tuitionFee: number;
+  transportFee: number;
+  mealsFee: number;
+  accommodationFee: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Invoice = {
+  id: string;
+  studentId: string;
+  classId: string;
+  academicYear: string;
+  issueDate: Date;
+  dueDate: Date;
+  totalAmount: number;
+  amountPaid: number;
+  balance: number;
+  status: 'Paid' | 'Unpaid' | 'Partially Paid' | 'Overdue';
+  items: Array<{
+    description: string;
+    amount: number;
+  }>;
+};
+
+export type Payment = {
+  id: string;
+  invoiceId: string;
+  studentId: string;
+  amount: number;
+  paymentDate: Date;
+  method: 'Cash' | 'Credit Card' | 'Bank Transfer' | 'Online';
+  transactionId?: string;
+};
