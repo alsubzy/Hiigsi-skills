@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   Bell,
   ChevronDown,
@@ -32,8 +32,6 @@ import { useState, useEffect } from 'react';
 import React from 'react';
 import { NavItem } from '@/lib/types';
 import { Logo } from '@/components/logo';
-import { useAuth, useUser } from '@/firebase';
-import { signOut } from 'firebase/auth';
 
 function NavLink({
   item,
@@ -113,30 +111,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, isSignedIn, loading } = useUser();
-  const auth = useAuth();
-
-  useEffect(() => {
-    if (!loading && !isSignedIn) {
-      router.push('/login');
-    }
-  }, [isSignedIn, loading, router]);
-  
-  const handleLogout = async () => {
-    if (auth) {
-      await signOut(auth);
-      router.push('/login');
-    }
-  };
-
-  if (loading || !isSignedIn) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Logo />
-      </div>
-    );
-  }
 
   return (
     <div className="grid h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
@@ -184,7 +158,7 @@ export default function DashboardLayout({
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={handleLogout}>
+                <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
@@ -263,7 +237,7 @@ export default function DashboardLayout({
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={handleLogout}>
+                <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
