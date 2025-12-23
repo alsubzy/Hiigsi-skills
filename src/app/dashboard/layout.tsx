@@ -33,8 +33,6 @@ import { useState, useEffect } from 'react';
 import React from 'react';
 import { NavItem } from '@/lib/types';
 import { Logo } from '@/components/logo';
-import { useUser, useAuth } from '@/firebase';
-import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 function NavLink({
@@ -115,37 +113,14 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { user, loading } = useUser();
-  const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
 
   const handleLogout = async () => {
-    if (auth) {
-      try {
-        await signOut(auth);
-        toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
-        router.push('/login');
-      } catch (error) {
-        console.error('Logout failed:', error);
-        toast({ title: 'Logout Failed', description: 'Could not log you out. Please try again.', variant: 'destructive' });
-      }
-    }
+      toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
+      router.push('/');
   };
-
-  if (loading || !user) {
-    return (
-        <div className="flex h-screen items-center justify-center">
-            <div className="text-lg font-medium">Loading...</div>
-        </div>
-    );
-  }
 
   return (
     <div className="grid h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
@@ -175,25 +150,25 @@ export default function DashboardLayout({
                   className="flex h-auto items-center justify-start gap-3 p-2 w-full"
                 >
                   <Avatar className="h-10 w-10 border">
-                    <AvatarImage src={user.photoURL || "https://picsum.photos/seed/principal/100"} />
-                    <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                    <AvatarImage src={"https://picsum.photos/seed/principal/100"} />
+                    <AvatarFallback>P</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start">
-                    <span className="font-semibold">{user.displayName || 'Principal'}</span>
+                    <span className="font-semibold">Principal</span>
                     <span className="text-xs text-muted-foreground">
-                      {user.email}
+                      principal@hiigsi.edu.so
                     </span>
                   </div>
                   <MoreHorizontal className="ml-auto h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel>{user.displayName || 'Principal Account'}</DropdownMenuLabel>
+                <DropdownMenuLabel>Principal Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <Link href="/login" passHref>
+                <Link href="/" passHref>
                   <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
@@ -262,18 +237,18 @@ export default function DashboardLayout({
                   className="relative h-10 w-10 rounded-full"
                 >
                   <Avatar className="h-10 w-10 border">
-                    <AvatarImage src={user.photoURL || "https://picsum.photos/seed/principal/100"} />
-                    <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                    <AvatarImage src={"https://picsum.photos/seed/principal/100"} />
+                    <AvatarFallback>P</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{user.displayName || 'Principal Account'}</DropdownMenuLabel>
+                <DropdownMenuLabel>Principal Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <Link href="/login" passHref>
+                <Link href="/" passHref>
                   <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout

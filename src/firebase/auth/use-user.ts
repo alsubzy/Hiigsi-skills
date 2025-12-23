@@ -1,35 +1,49 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import type { User } from 'firebase/auth';
-import { onAuthStateChanged } from 'firebase/auth';
-import { useAuth } from '@/firebase';
+import {
+  useState,
+  useEffect,
+  type ReactNode,
+} from 'react';
+import { FirebaseApp } from 'firebase/app';
+import { Firestore } from 'firebase/firestore';
 
-export function useUser() {
-  const auth = useAuth();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+import { initializeFirebase, FirebaseProvider } from '@/firebase';
+
+type FirebaseClientProviderProps = {
+  children: ReactNode;
+};
+
+type FirebaseInstances = {
+  firebaseApp: FirebaseApp;
+  firestore: Firestore;
+};
+
+/**
+ * Ensures that Firebase is initialized only once on the client-side.
+ */
+export function FirebaseClientProvider({
+  children,
+}: FirebaseClientProviderProps) {
+  const [firebase, setFirebase] = useState<FirebaseInstances | null>(null);
 
   useEffect(() => {
-    if (!auth) {
-      // Auth might not be initialized yet
-      return;
-    }
+    // This code only runs on the client
+    const instances = initializeFirebase();
+    setFirebase(instances);
+  }, []);
 
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (user) => {
-        setUser(user);
-        setLoading(false);
-      },
-      (error) => {
-        console.error('Auth state change error:', error);
-        setLoading(false);
-      }
-    );
+  if (!firebase) {
+    // You can render a loading spinner here if you want
+    return null;
+  }
 
-    return () => unsubscribe();
-  }, [auth]);
-
-  return { user, loading };
+  return (
+    <FirebaseProvider
+      firebaseApp={firebase.firebaseApp}
+      firestore={firebase.firestore}
+    >
+      {children}
+    </FirebaseProvider>
+  );
 }
