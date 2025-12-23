@@ -120,23 +120,57 @@ export type Syllabus = {
 
 export type Student = {
     id: string;
-    studentId: string;
+    studentId: string; // User-facing ID e.g., ST-001
+    admissionNumber: string;
+    userId?: string; // Link to a user account if applicable
     name: string;
     avatar: string;
     classId: string;
     sectionId: string;
-    parentName: string;
     status: 'Active' | 'Inactive' | 'Graduated';
     admissionDate: string;
     dob: string;
-    gender: 'Male' | 'Female';
+    gender: 'Male' | 'Female' | 'Other';
     email: string;
     phone: string;
     address: string;
+    parentName?: string; // Simplified for now
+    // More complex parent/guardian info can be a separate type
+};
+
+export type Guardian = {
+    id: string;
+    studentId: string;
+    name: string;
+    relation: string;
+    phone: string;
+    email?: string;
+};
+
+
+export type Admission = {
+    id: string;
+    studentName: string;
+    appliedClassId: string;
+    admissionDate: Date;
+    status: 'Pending' | 'Approved' | 'Rejected';
+    studentId?: string; // Filled when approved and student record is created
+    // Include other applicant details
 };
 
 export type Attendance = {
+    id: string;
     studentId: string;
-    name: string;
-    status: 'present' | 'absent' | 'late' | 'excused';
+    date: Date;
+    status: 'Present' | 'Absent' | 'Late' | 'Excused';
+    markedBy: string; // userId of teacher/admin
+};
+
+export type Promotion = {
+    id: string;
+    studentId: string;
+    fromClassId: string;
+    toClassId: string;
+    academicYearId: string;
+    promotionDate: Date;
 };
