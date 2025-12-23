@@ -12,6 +12,7 @@ import {
   FileText,
   CalendarCheck,
   ArrowUp,
+  Megaphone,
 } from 'lucide-react';
 import type { NavItem, User, AcademicClass, Section, Subject, CalendarEvent, TimetableEntry, Syllabus, Student, Attendance } from './types';
 
@@ -72,12 +73,12 @@ export const navItems: NavItem[] = [
   {
     label: 'Examination & Results',
     icon: FileText,
-    href: '#',
+    href: '/dashboard/examinations',
     children: [
-      { label: 'Exams', href: '#' },
-      { label: 'Exam Schedule', href: '#' },
-      { label: 'Marks Entry', href: '#' },
-      { label: 'Results & Report Cards', href: '#' },
+      { label: 'Exams', href: '/dashboard/examinations/exams' },
+      { label: 'Exam Schedule', href: '/dashboard/examinations/schedule' },
+      { label: 'Marks Entry', href: '/dashboard/examinations/marks-entry' },
+      { label: 'Results & Report Cards', href: '/dashboard/examinations/report-cards' },
     ],
   },
   {
@@ -92,27 +93,15 @@ export const navItems: NavItem[] = [
       { label: 'Financial Reports', href: '#' },
     ],
   },
-  {
-    label: 'Library Management',
-    icon: Library,
-    href: '#',
-    children: [
-      { label: 'Books', href: '#' },
-      { label: 'Categories', href: '#' },
-      { label: 'Issue / Return', href: '#' },
-      { label: 'Library Reports', href: '#' },
-    ],
+   {
+    label: 'Communication',
+    icon: Megaphone,
+    href: '/dashboard/communication',
   },
   {
     label: 'Reports & Analytics',
     icon: BarChart3,
     href: '/dashboard/reports',
-    children: [
-      { label: 'Academic Reports', href: '/dashboard/reports' },
-      { label: 'Attendance Reports', href: '#' },
-      { label: 'Financial Reports', href: '#' },
-      { label: 'Custom Reports', href: '#' },
-    ],
   },
   {
     label: 'System Settings',
