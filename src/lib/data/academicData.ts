@@ -1,13 +1,15 @@
 // src/lib/data/academicData.ts
 import { AcademicClass, Section, Subject, AcademicYear, Timetable, Syllabus, CalendarEvent } from '@/lib/types';
-import { academicClasses as initialClasses, sections as initialSections, subjects as initialSubjects } from './placeholder-data';
+import { academicClasses as initialClasses, sections as initialSections, subjects as initialSubjects, calendarEvents as initialCalendarEvents } from './placeholder-data';
 
 let academicClasses: AcademicClass[] = [...initialClasses];
 let sections: Section[] = [...initialSections];
 let subjects: Subject[] = initialSubjects.map(s => ({...s, teacherId: '2' })); // Mock teacherId
 
 let academicYears: AcademicYear[] = [
-    { id: 'ay-2024', name: '2024-2025', startDate: new Date('2024-09-01'), endDate: new Date('2025-06-30'), isCurrent: true },
+    { id: 'ay1', name: 'Academic Year 2024-2025', startDate: new Date('2024-09-01'), endDate: new Date('2025-06-30'), isCurrent: true },
+    { id: 'ay2', name: 'Academic Year 2023-2024', startDate: new Date('2023-09-01'), endDate: new Date('2024-06-30'), isCurrent: false },
+    { id: 'ay3', name: 'Academic Year 2022-2023', startDate: new Date('2022-09-01'), endDate: new Date('2023-06-30'), isCurrent: false },
 ];
 
 let timetables: Timetable[] = [
@@ -18,9 +20,7 @@ let syllabi: Syllabus[] = [
     { id: 'syl-1', subjectId: 'sub2', classId: 'c3', title: 'Biology Syllabus', description: 'Full year syllabus for Grade 7 Biology', term: 'Full Year', status: 'In Progress', chapters: [{ title: 'Cell Structure', topics: ['The Nucleus', 'Mitochondria']}] },
 ];
 
-let calendarEvents: CalendarEvent[] = [
-    { id: 'ce-1', academicYearId: 'ay-2024', title: 'Start of School', date: new Date('2024-09-01'), type: 'event', description: 'First day of the academic year' }
-];
+let calendarEvents: CalendarEvent[] = [...initialCalendarEvents];
 
 
 // Using a more repository-like pattern
@@ -92,5 +92,31 @@ export const academicData = {
             return true;
         },
     },
-    // ... add similar mock repositories for academicYears, timetables, syllabus, calendarEvents
+    academicYears: {
+        findAll: async () => academicYears,
+        findById: async (id: string) => academicYears.find(ay => ay.id === id),
+        create: async (data: Omit<AcademicYear, 'id'>) => {
+            const newYear: AcademicYear = { id: `ay-${Date.now()}`, ...data };
+            if (newYear.isCurrent) {
+                academicYears.forEach(y => y.isCurrent = false);
+            }
+            academicYears.push(newYear);
+            return newYear;
+        },
+        update: async (id: string, updates: Partial<Omit<AcademicYear, 'id'>>) => {
+            const index = academicYears.findIndex(ay => ay.id === id);
+            if (index === -1) return undefined;
+            if (updates.isCurrent) {
+                 academicYears.forEach(y => y.isCurrent = false);
+            }
+            academicYears[index] = { ...academicYears[index], ...updates };
+            return academicYears[index];
+        },
+        remove: async (id: string) => {
+            const index = academicYears.findIndex(ay => ay.id === id);
+            if (index === -1 || academicYears[index].isCurrent) return false; // Don't delete current year
+            academicYears.splice(index, 1);
+            return true;
+        }
+    }
 };

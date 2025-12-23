@@ -2,7 +2,7 @@
 import { z } from 'zod';
 import { academicData } from '@/lib/data/academicData';
 import { ApiError } from '@/lib/utils/ApiError';
-import type { AcademicClass, Section, Subject } from '@/lib/types';
+import type { AcademicClass, Section, Subject, AcademicYear } from '@/lib/types';
 import { createLog } from './logService';
 
 // --- Validation Schemas ---
@@ -24,6 +24,16 @@ const subjectSchema = z.object({
     classId: z.string().min(1, 'Class ID is required.'),
     teacherId: z.string().optional(),
     status: z.enum(['Active', 'Inactive']),
+});
+
+const academicYearSchema = z.object({
+    name: z.string().min(4, 'Academic year name is required.'),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
+    isCurrent: z.boolean().optional(),
+}).refine(data => data.endDate > data.startDate, {
+    message: 'End date must be after start date.',
+    path: ['endDate'],
 });
 
 
@@ -163,4 +173,39 @@ export async function deleteSubject(id: string): Promise<void> {
     await createLog({ userId: 'admin-id', action: 'delete_subject', module: 'Academics', details: `Deleted subject ID: ${id}` });
 }
 
-// Implement other services for Calendar, Timetable, Syllabus here...
+// --- Academic Year Service ---
+
+export async function getAllAcademicYears(): Promise<AcademicYear[]> {
+    return academicData.academicYears.findAll();
+}
+
+export async function createAcademicYear(data: unknown): Promise<AcademicYear> {
+    const validation = academicYearSchema.safeParse(data);
+    if (!validation.success) {
+        throw new ApiError(400, 'Invalid academic year data', validation.error.flatten());
+    }
+    const newYear = await academicData.academicYears.create(validation.data);
+    await createLog({ userId: 'admin-id', action: 'create_academic_year', module: 'Settings', details: `Created academic year: ${newYear.name}` });
+    return newYear;
+}
+
+export async function updateAcademicYear(id: string, data: unknown): Promise<AcademicYear> {
+    const validation = academicYearSchema.partial().safeParse(data);
+     if (!validation.success) {
+        throw new ApiError(400, 'Invalid academic year update data', validation.error.flatten());
+    }
+    const updatedYear = await academicData.academicYears.update(id, validation.data);
+    if (!updatedYear) {
+        throw new ApiError(404, 'Academic year not found.');
+    }
+    await createLog({ userId: 'admin-id', action: 'update_academic_year', module: 'Settings', details: `Updated academic year: ${updatedYear.name}` });
+    return updatedYear;
+}
+
+export async function deleteAcademicYear(id: string): Promise<void> {
+    const success = await academicData.academicYears.remove(id);
+    if (!success) {
+        throw new ApiError(400, 'Could not delete academic year. It might be the current year or does not exist.');
+    }
+    await createLog({ userId: 'admin-id', action: 'delete_academic_year', module: 'Settings', details: `Deleted academic year ID: ${id}` });
+}

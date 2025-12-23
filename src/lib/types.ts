@@ -85,6 +85,7 @@ export type ActivityLog = {
     action: string;
     module: string;
     details?: string;
+    ip?: string;
     timestamp: Date;
 };
 
@@ -302,4 +303,18 @@ export type GeneratedReport = {
     date: Date;
     status: 'Generated' | 'Archived';
     generatedBy: string; // userId
+};
+
+// --- Settings Module Types ---
+
+export type SchoolProfile = {
+    schoolName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+    mission: string;
+    logoUrl?: string;
 };
