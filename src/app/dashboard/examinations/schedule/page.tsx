@@ -27,26 +27,24 @@ function Day(props: DayProps & { filteredExams?: typeof initialExamSchedule }) {
   const [hasExam, setHasExam] = React.useState(false);
 
   React.useEffect(() => {
+    if (!date) return;
     try {
       const formattedDate = format(date, 'yyyy-MM-dd');
       const examExists = filteredExams.some((e: any) => format(e.date, 'yyyy-MM-dd') === formattedDate);
       setHasExam(examExists);
     } catch (error) {
-      // Catch potential date formatting errors, though less likely now
       setHasExam(false);
     }
   }, [date, filteredExams]);
 
-
   return (
-    <div className="relative">
-      <DayComponent {...props} />
-      {hasExam && (
-        <span className="absolute bottom-1 right-1 h-2 w-2 rounded-full bg-destructive" />
-      )}
-    </div>
+    <DayComponent {...props}>
+      {props.date.getDate()}
+      {hasExam && <span className="absolute bottom-1 right-1 h-2 w-2 rounded-full bg-destructive" />}
+    </DayComponent>
   );
 }
+
 
 export default function ExamSchedulePage() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -92,7 +90,7 @@ export default function ExamSchedulePage() {
               onSelect={setDate}
               className="rounded-md border"
               components={{
-                Day,
+                Day: (props) => <Day {...props} filteredExams={filteredExams} />,
               }}
             />
           </CardContent>
