@@ -10,6 +10,39 @@ export type User = {
   createdDate: string;
 };
 
+// Extended user type for backend with sensitive info
+export type BackendUser = User & {
+    password?: string; // Should be hashed in a real DB
+    deletedAt?: Date | null;
+    roleId?: string;
+}
+
+export type Role = {
+    id: string;
+    name: string;
+    isSystem: boolean; // System roles cannot be deleted
+    permissions: string[];
+};
+
+export type Staff = {
+    id: string;
+    userId: string;
+    name: string;
+    position: string;
+    department: string;
+    status: 'Active' | 'On Leave' | 'Resigned';
+};
+
+export type ActivityLog = {
+    id: string;
+    userId: string;
+    action: string;
+    module: string;
+    details?: string;
+    timestamp: Date;
+};
+
+
 export type NavItem = {
   href: string;
   label: string;
