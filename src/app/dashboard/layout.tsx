@@ -13,6 +13,7 @@ import {
   Search,
   ShoppingCart,
   Users,
+  MoreHorizontal
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -40,9 +41,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { navItems, QuanticoLogo } from '@/lib/placeholder-data';
+import { navItems } from '@/lib/placeholder-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState } from 'react';
+import React from 'react';
+import { QuanticoLogo } from '@/components/quantico-logo';
+
 
 function NavLink({
   item,
@@ -52,9 +56,10 @@ function NavLink({
   pathname: string;
 }) {
   const [isOpen, setIsOpen] = useState(pathname.startsWith(item.href));
-  const isParentActive = pathname.startsWith(item.href);
+  const isParentActive = pathname.startsWith(item.href) && item.href !== '/dashboard';
+  const isActive = pathname === item.href;
 
-  if (item.children) {
+  if ('children' in item && item.children) {
     return (
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
@@ -98,7 +103,7 @@ function NavLink({
       href={item.href}
       className={cn(
         'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-        pathname === item.href ? 'bg-secondary text-primary' : '',
+        isActive ? 'bg-secondary text-primary' : '',
         'font-medium'
       )}
     >
@@ -114,6 +119,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const breadcrumb = pathname.split('/').filter(p => p);
+
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
@@ -228,11 +235,15 @@ export default function DashboardLayout({
             </SheetContent>
           </Sheet>
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <Link href="#" className="text-foreground"><Home className="h-5 w-5" /></Link>
-            <ChevronRight className="h-4 w-4" />
-            <Link href="/dashboard" className="text-foreground">Dashboard</Link>
-            <ChevronRight className="h-4 w-4" />
-            <span className="text-foreground">Analytics</span>
+             <Link href="/dashboard" className="text-foreground"><Home className="h-5 w-5" /></Link>
+            {breadcrumb.map((item, index) => (
+              <React.Fragment key={item}>
+                <ChevronRight className="h-4 w-4" />
+                <Link href={`/${breadcrumb.slice(0, index + 1).join('/')}`} className="capitalize text-foreground">
+                  {item}
+                </Link>
+              </React.Fragment>
+            ))}
           </div>
           <div className="ml-auto flex items-center gap-4">
             <div className="flex -space-x-2">

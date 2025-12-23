@@ -40,11 +40,12 @@ import {
   kpis,
   productActivityData,
   recentTransactions,
-  QuanticoLogo,
 } from '@/lib/placeholder-data';
+import { QuanticoLogo } from '@/components/quantico-logo';
 import {
   ChartConfig,
   ChartContainer,
+  ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
