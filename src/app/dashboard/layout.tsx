@@ -113,7 +113,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="grid h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-card md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-16 items-center gap-2 border-b px-4 lg:px-6">
@@ -164,8 +164,8 @@ export default function DashboardLayout({
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
-        <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-8">
+      <div className="flex flex-col h-screen overflow-hidden">
+        <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-8 shrink-0">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -238,8 +238,10 @@ export default function DashboardLayout({
             </DropdownMenu>
           </div>
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-8 bg-muted/40">
-          {children}
+        <main className="flex-1 overflow-y-auto p-4 lg:p-8 bg-muted/40">
+          <div className="flex flex-col gap-4 lg:gap-6">
+            {children}
+          </div>
         </main>
       </div>
     </div>
