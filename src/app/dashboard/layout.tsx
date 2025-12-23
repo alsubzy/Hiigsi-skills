@@ -46,20 +46,21 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState } from 'react';
 import React from 'react';
 import { QuanticoLogo } from '@/components/quantico-logo';
+import { NavItem } from '@/lib/types';
 
 
 function NavLink({
   item,
   pathname,
 }: {
-  item: (typeof navItems)[0];
+  item: NavItem;
   pathname: string;
 }) {
   const [isOpen, setIsOpen] = useState(pathname.startsWith(item.href));
   const isParentActive = pathname.startsWith(item.href) && item.href !== '/dashboard';
   const isActive = pathname === item.href;
 
-  if ('children' in item && item.children) {
+  if (item.children && item.children.length > 0) {
     return (
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
@@ -129,8 +130,8 @@ export default function DashboardLayout({
           <div className="flex h-16 items-center gap-2 border-b px-4 lg:px-6">
             <QuanticoLogo />
             <div className='flex flex-col'>
-              <span className="font-semibold">Quantico</span>
-              <span className="text-xs text-muted-foreground">ID: CMP-1006</span>
+              <span className="font-semibold">EduSmart</span>
+              <span className="text-xs text-muted-foreground">ID: SCH-2025</span>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
@@ -145,26 +146,26 @@ export default function DashboardLayout({
               <CardHeader className="p-4">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <CircleHelp className="h-5 w-5" />
-                  Need setup help?
+                  Need support?
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Get your questions answered in a 1:1 call with our team.
+                  Get your questions answered.
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4 pt-0">
                 <Button size="sm" className="w-full">
-                  Schedule a call
+                  Contact Admin
                 </Button>
               </CardContent>
             </Card>
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10 border">
-                <AvatarImage src="https://picsum.photos/seed/nathan/100/100" />
-                <AvatarFallback>NS</AvatarFallback>
+                <AvatarImage src="https://picsum.photos/seed/principal/100/100" />
+                <AvatarFallback>AD</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="font-semibold">Nathan Scott</span>
-                <span className="text-xs text-muted-foreground">scott@example.com</span>
+                <span className="font-semibold">Admin</span>
+                <span className="text-xs text-muted-foreground">admin@edusmart.com</span>
               </div>
               <Button variant="ghost" size="icon" className="ml-auto">
                 <MoreHorizontal className="h-5 w-5"/>
@@ -190,8 +191,8 @@ export default function DashboardLayout({
               <div className="flex h-16 items-center gap-2 border-b px-4">
                 <QuanticoLogo />
                  <div className='flex flex-col'>
-                  <span className="font-semibold">Quantico</span>
-                  <span className="text-xs text-muted-foreground">ID: CMP-1006</span>
+                  <span className="font-semibold">EduSmart</span>
+                  <span className="text-xs text-muted-foreground">ID: SCH-2025</span>
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto">
@@ -206,26 +207,26 @@ export default function DashboardLayout({
                   <CardHeader className="p-4">
                     <CardTitle className="flex items-center gap-2 text-base">
                       <CircleHelp className="h-5 w-5" />
-                      Need setup help?
+                      Need support?
                     </CardTitle>
                     <CardDescription className="text-xs">
-                      Get your questions answered in a 1:1 call with our team.
+                      Get your questions answered.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
                     <Button size="sm" className="w-full">
-                      Schedule a call
+                      Contact Admin
                     </Button>
                   </CardContent>
                 </Card>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border">
-                    <AvatarImage src="https://picsum.photos/seed/nathan/100/100" />
-                    <AvatarFallback>NS</AvatarFallback>
+                    <AvatarImage src="https://picsum.photos/seed/principal/100/100" />
+                    <AvatarFallback>AD</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">
-                    <span className="font-semibold">Nathan Scott</span>
-                    <span className="text-xs text-muted-foreground">scott@example.com</span>
+                    <span className="font-semibold">Admin</span>
+                    <span className="text-xs text-muted-foreground">admin@edusmart.com</span>
                   </div>
                   <Button variant="ghost" size="icon" className="ml-auto">
                     <MoreHorizontal className="h-5 w-5"/>

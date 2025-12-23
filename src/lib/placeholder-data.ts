@@ -1,35 +1,45 @@
 
 import {
-  LayoutDashboard,
-  BarChart2,
-  Package,
-  ShoppingBag,
-  Users,
-  Banknote,
-  Settings,
-  HelpCircle,
   Home,
-  AreaChart,
-  Boxes,
-  FileText,
-  Ticket,
-  Contact,
-  Star,
-  Receipt,
-  GraduationCap,
+  Users,
   BookOpen,
-  Megaphone,
-  FileOutput,
-  PlusCircle,
-  MoreHorizontal,
+  Wallet,
+  CalendarCheck,
+  BarChart3,
+  ShieldCheck,
+  Settings,
 } from 'lucide-react';
-import { cn } from './utils';
+import type { NavItem, Student, User } from './types';
 
-export const navItems = [
+
+export const navItems: NavItem[] = [
   {
-    label: 'Dashboard',
+    label: 'Home',
     icon: Home,
     href: '/dashboard',
+  },
+  {
+    label: 'Academics',
+    icon: BookOpen,
+    href: '/dashboard/academics',
+    children: [
+      {
+        label: 'Class Schedule',
+        href: '/dashboard/academics/schedule',
+      },
+      {
+        label: 'Subjects',
+        href: '/dashboard/academics/subjects',
+      },
+      {
+        label: 'Timetable',
+        href: '/dashboard/academics/timetable',
+      },
+      {
+        label: 'Exam Results',
+        href: '/dashboard/academics/results',
+      },
+    ]
   },
   {
     label: 'Students',
@@ -37,33 +47,44 @@ export const navItems = [
     href: '/dashboard/students',
   },
   {
-    label: 'Academics',
-    icon: BookOpen,
-    href: '/dashboard/academics',
+    label: 'Teachers',
+    icon: GraduationCap,
+    href: '/dashboard/teachers',
   },
   {
-    label: 'Finance',
-    icon: Banknote,
+    label: 'Attendance',
+    icon: CalendarCheck,
+    href: '/dashboard/attendance',
+  },
+  {
+    label: 'Fees & Finance',
+    icon: Wallet,
     href: '/dashboard/finance',
   },
   {
+    label: 'Library',
+    icon: BookOpen,
+    href: '/dashboard/library',
+  },
+  {
     label: 'Reports',
-    icon: FileOutput,
+    icon: BarChart3,
     href: '/dashboard/reports',
   },
   {
-    label: 'Users',
-    icon: Users,
-    href: '/dashboard/users',
+    label: 'Staff & Roles',
+    icon: ShieldCheck,
+    href: '/dashboard/staff',
   },
   {
-    label: 'Communication',
-    icon: Megaphone,
-    href: '/dashboard/communication',
+    label: 'Settings',
+    icon: Settings,
+    href: '/dashboard/settings',
   },
 ];
 
-export const students = [
+
+export const students: Student[] = [
   {
     id: '1',
     name: 'Liam Smith',
@@ -120,7 +141,7 @@ export const students = [
   },
 ];
 
-export const users = [
+export const users: User[] = [
     {
         id: '1',
         name: 'Nathan Scott',
@@ -242,3 +263,8 @@ export const kpis = [
       email: 'mike.j@example.com',
     },
   ];
+
+import {
+  GraduationCap
+} from 'lucide-react';
+

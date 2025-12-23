@@ -1,3 +1,5 @@
+import type { LucideIcon } from "lucide-react";
+
 export type Student = {
   id: string;
   name: string;
@@ -21,8 +23,7 @@ export type User = {
 export type NavItem = {
   href: string;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  active?: boolean;
+  icon: LucideIcon;
   children?: {
     href: string;
     label: string;
