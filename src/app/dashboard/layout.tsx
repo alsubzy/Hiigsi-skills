@@ -10,10 +10,10 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -43,7 +43,6 @@ function NavLink({
   const isParentActive =
     (!!item.href && pathname.startsWith(item.href) && item.href !== '/dashboard');
   const isActive = pathname === item.href;
-  const [isOpen, setIsOpen] = useState(isParentActive);
   
   const [isClient, setIsClient] = useState(false);
 
@@ -51,18 +50,14 @@ function NavLink({
     setIsClient(true);
   }, []);
 
-  useEffect(() => {
-    setIsOpen(isParentActive);
-  }, [isParentActive, pathname]);
-
   if (!isClient) {
     return null;
   }
 
   if (item.children && item.children.length > 0) {
     return (
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CollapsibleTrigger asChild>
+      <Popover>
+        <PopoverTrigger asChild>
           <Button
             variant={isParentActive ? 'secondary' : 'ghost'}
             className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium"
@@ -70,30 +65,27 @@ function NavLink({
             <item.icon className="h-5 w-5" />
             {item.label}
             <ChevronDown
-              className={cn(
-                'ml-auto h-4 w-4 text-muted-foreground transition-transform',
-                isOpen && 'rotate-180'
-              )}
+              className='ml-auto h-4 w-4 text-muted-foreground transition-transform'
             />
           </Button>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="pl-8 border-l-2 ml-[22px]">
-          <nav className="grid gap-1 py-2">
+        </PopoverTrigger>
+        <PopoverContent side="right" align="start" className="ml-2 p-1 w-56 bg-card border-border shadow-md">
+          <nav className="grid gap-1">
             {item.children.map((child) => (
               <Link
                 key={child.label}
                 href={child.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary text-sm',
-                  pathname === child.href ? 'bg-muted text-primary font-medium' : ''
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:bg-muted hover:text-primary text-sm',
+                  pathname === child.href ? 'bg-muted text-primary font-semibold' : ''
                 )}
               >
                 {child.label}
               </Link>
             ))}
           </nav>
-        </CollapsibleContent>
-      </Collapsible>
+        </PopoverContent>
+      </Popover>
     );
   }
 
