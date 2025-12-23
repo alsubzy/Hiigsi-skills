@@ -132,18 +132,6 @@ export default function DashboardLayout({
             </nav>
           </div>
           <div className="mt-auto flex flex-col gap-4 p-4">
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="text-sm font-semibold">Need support?</h3>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Contact our admin for assistance.
-                </p>
-                <Button size="sm" className="w-full mt-3">
-                  Contact Admin
-                </Button>
-              </CardContent>
-            </Card>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -206,17 +194,7 @@ export default function DashboardLayout({
                 </nav>
               </div>
               <div className="mt-auto flex flex-col gap-4 p-4 border-t">
-                 <Card>
-                  <CardContent className="p-4">
-                    <h3 className="text-sm font-semibold">Need support?</h3>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Contact our admin for assistance.
-                    </p>
-                    <Button size="sm" className="w-full mt-3">
-                      Contact Admin
-                    </Button>
-                  </CardContent>
-                </Card>
+                 
               </div>
             </SheetContent>
           </Sheet>
