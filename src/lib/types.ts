@@ -221,3 +221,61 @@ export type Promotion = {
     academicYearId: string;
     promotionDate: Date;
 };
+
+// --- Examination Module Types ---
+
+export type Exam = {
+    id: string;
+    name: string;
+    academicYearId: string;
+    term: string;
+    classIds: string[];
+    subjectIds: string[];
+    status: 'Draft' | 'Scheduled' | 'Completed' | 'Published';
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+export type ExamSchedule = {
+    id: string;
+    examId: string;
+    subjectId: string;
+    classId: string;
+    date: Date;
+    startTime: string; // "HH:mm"
+    endTime: string; // "HH:mm"
+    room: string;
+};
+
+export type Mark = {
+    id: string;
+    examId: string;
+    studentId: string;
+    subjectId: string;
+    marksObtained: number;
+    maxMarks: number;
+    enteredBy: string; // userId
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+export type ReportCard = {
+    id: string;
+    studentId: string;
+    examId: string;
+    classId: string;
+    generatedAt: Date;
+    totalMarks: number;
+    percentage: number;
+    grade: string;
+    rank?: number;
+    status: 'Pass' | 'Fail';
+    remarks: string;
+    subjectResults: Array<{
+        subjectId: string;
+        subjectName: string;
+        marksObtained: number;
+        maxMarks: number;
+        grade: string;
+    }>;
+};
