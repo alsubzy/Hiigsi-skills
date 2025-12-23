@@ -89,7 +89,7 @@ export const navItems: NavItem[] = [
     icon: Wallet,
     href: '/dashboard/finance',
     children: [
-      { label: 'Fee Structure', href: '/dashboard/finance/fee-structure' },
+      { label: 'AI Fee Suggester', href: '/dashboard/finance/suggest-fees' },
       { label: 'Student Fees', href: '/dashboard/finance/student-fees' },
       { label: 'Payments', href: '/dashboard/finance/payments' },
       { label: 'Invoices', href: '/dashboard/finance/invoices' },
