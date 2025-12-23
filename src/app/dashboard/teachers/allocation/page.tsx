@@ -19,7 +19,7 @@ export default function SubjectAllocationPage() {
 
     const handleTeacherChange = (subjectId: string, teacherName: string) => {
         setSubjects(currentSubjects => 
-            currentSubjects.map(s => s.id === subjectId ? { ...s, teacher: teacherName } : s)
+            currentSubjects.map(s => s.id === subjectId ? { ...s, teacher: teacherName === 'unassigned' ? undefined : teacherName } : s)
         );
     };
 
@@ -74,14 +74,14 @@ export default function SubjectAllocationPage() {
                                     <TableCell className="font-medium">{subject.name}</TableCell>
                                     <TableCell>
                                         <Select
-                                            value={subject.teacher || ''}
+                                            value={subject.teacher || 'unassigned'}
                                             onValueChange={(teacherName) => handleTeacherChange(subject.id, teacherName)}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Assign a teacher" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="">Unassigned</SelectItem>
+                                                <SelectItem value="unassigned">Unassigned</SelectItem>
                                                 {teachers.map(t => <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>)}
                                             </SelectContent>
                                         </Select>
