@@ -33,6 +33,52 @@ export type Staff = {
     status: 'Active' | 'On Leave' | 'Resigned';
 };
 
+export type Teacher = {
+    id: string;
+    userId: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    gender: 'Male' | 'Female' | 'Other';
+    qualification: string;
+    hireDate: Date;
+    status: 'Active' | 'Inactive' | 'On Leave';
+    createdAt: Date;
+    updatedAt: Date;
+    deletedAt?: Date | null;
+};
+
+export type SubjectAllocation = {
+    id: string;
+    teacherId: string;
+    subjectId: string;
+    classId: string;
+    academicYear: string;
+};
+
+export type TeacherTimetable = {
+    id: string;
+    teacherId: string;
+    subjectId: string;
+    classId: string;
+    dayOfWeek: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
+    startTime: string; // HH:mm format
+    endTime: string; // HH:mm format
+};
+
+export type TeacherPerformance = {
+    id: string;
+    teacherId: string;
+    evaluatorId: string;
+    evaluationDate: Date;
+    teachingQualityScore: number;
+    punctualityScore: number;
+    studentFeedbackScore: number;
+    remarks: string;
+    overallScore: number; // Calculated
+};
+
+
 export type ActivityLog = {
     id: string;
     userId: string;
@@ -78,7 +124,7 @@ export type Subject = {
 };
 
 export type AcademicYear = {
-    id: string;
+    id:string;
     name: string;
     startDate: Date;
     endDate: Date;
@@ -159,11 +205,12 @@ export type Admission = {
 };
 
 export type Attendance = {
-    id: string;
+    id?: string;
     studentId: string;
-    date: Date;
-    status: 'Present' | 'Absent' | 'Late' | 'Excused';
-    markedBy: string; // userId of teacher/admin
+    name: string;
+    date?: Date;
+    status: 'Present' | 'Absent' | 'Late' | 'Excused' | 'present' | 'absent' | 'late' | 'excused';
+    markedBy?: string; // userId of teacher/admin
 };
 
 export type Promotion = {
