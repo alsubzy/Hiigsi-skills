@@ -3,8 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Bell,
-  ChevronRight,
-  Home,
+  ChevronDown,
   Menu,
   MoreHorizontal,
   Search,
@@ -43,7 +42,7 @@ function NavLink({
   pathname: string;
 }) {
   const isParentActive =
-    !!item.href && pathname.startsWith(item.href) && item.href !== '/';
+    (!!item.href && pathname.startsWith(item.href) && item.href !== '/dashboard');
   const isActive = pathname === item.href;
   const [isOpen, setIsOpen] = useState(isParentActive);
 
@@ -57,27 +56,27 @@ function NavLink({
         <CollapsibleTrigger asChild>
           <Button
             variant={isParentActive ? 'secondary' : 'ghost'}
-            className="w-full justify-start gap-3 rounded-lg px-3"
+            className="w-full justify-start gap-3 rounded-lg px-3 py-6 text-base"
           >
             <item.icon className="h-5 w-5" />
             {item.label}
-            <ChevronRight
+            <ChevronDown
               className={cn(
-                'ml-auto h-4 w-4 transition-transform',
-                isOpen && 'rotate-90'
+                'ml-auto h-4 w-4 text-muted-foreground transition-transform',
+                isOpen && 'rotate-180'
               )}
             />
           </Button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="pl-6">
-          <nav className="grid gap-1 py-1">
+        <CollapsibleContent className="pl-8 border-l-2 border-primary ml-[22px]">
+          <nav className="grid gap-2 py-2">
             {item.children.map((child) => (
               <Link
                 key={child.label}
                 href={child.href}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary text-sm',
-                  pathname === child.href ? 'bg-muted text-primary' : ''
+                  pathname === child.href ? 'bg-secondary text-primary font-medium' : ''
                 )}
               >
                 {child.label}
@@ -94,9 +93,9 @@ function NavLink({
       key={item.label}
       href={item.href}
       className={cn(
-        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-        isActive ? 'bg-secondary text-primary' : '',
-        'font-medium'
+        'flex items-center gap-3 rounded-lg px-3 py-6 text-base text-muted-foreground transition-all hover:text-primary',
+        isActive ? 'bg-secondary text-primary font-semibold' : '',
+        
       )}
     >
       <item.icon className="h-5 w-5" />
