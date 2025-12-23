@@ -1,19 +1,22 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getAuth, type Auth } from 'firebase/auth';
+import getConfig from 'next/config';
 
 export function initializeFirebase(): {
   firebaseApp: FirebaseApp;
   auth: Auth;
   firestore: Firestore;
 } {
+  const { publicRuntimeConfig } = getConfig();
+
   const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_APP_ID,
+    apiKey: publicRuntimeConfig.NEXT_PUBLIC_API_KEY,
+    authDomain: publicRuntimeConfig.NEXT_PUBLIC_AUTH_DOMAIN,
+    projectId: publicRuntimeConfig.NEXT_PUBLIC_PROJECT_ID,
+    storageBucket: publicRuntimeConfig.NEXT_PUBLIC_STORAGE_BUCKET,
+    messagingSenderId: publicRuntimeConfig.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+    appId: publicRuntimeConfig.NEXT_PUBLIC_APP_ID,
   };
 
   const firebaseApp = !getApps().length
