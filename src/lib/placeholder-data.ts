@@ -61,12 +61,12 @@ export const navItems: NavItem[] = [
   {
     label: 'Teacher Management',
     icon: UserCheck,
-    href: '#',
+    href: '/dashboard/teachers',
     children: [
-      { label: 'Teachers', href: '#' },
-      { label: 'Subject Allocation', href: '#' },
-      { label: 'Teacher Timetable', href: '#' },
-      { label: 'Performance Evaluation', href: '#' },
+      { label: 'Teachers', href: '/dashboard/teachers' },
+      { label: 'Subject Allocation', href: '/dashboard/teachers/allocation' },
+      { label: 'Teacher Timetable', href: '/dashboard/teachers/timetable' },
+      { label: 'Performance Evaluation', href: '/dashboard/teachers/performance' },
     ],
   },
   {
@@ -266,3 +266,5 @@ export const initialAttendance: Attendance[] = students
         name: student.name,
         status: ['present', 'absent', 'late', 'excused'][Math.floor(Math.random() * 4)] as 'present' | 'absent' | 'late' | 'excused',
     }));
+
+    
