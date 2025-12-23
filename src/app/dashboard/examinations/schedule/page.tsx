@@ -17,11 +17,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 
 const examSchedule = [
-  { id: 'exs1', subject: 'Mathematics', classId: 'c3', date: new Date('2024-10-15T00:00:00'), time: '09:00 AM - 11:00 AM' },
-  { id: 'exs2', subject: 'Science', classId: 'c3', date: new Date('2024-10-16T00:00:00'), time: '09:00 AM - 11:00 AM' },
-  { id: 'exs3', subject: 'English', classId: 'c3', date: new Date('2024-10-17T00:00:00'), time: '09:00 AM - 11:00 AM' },
-  { id: 'exs4', subject: 'Physics', classId: 'c5', date: new Date('2024-12-10T00:00:00'), time: '01:00 PM - 03:00 PM' },
-  { id: 'exs5', subject: 'Chemistry', classId: 'c5', date: new Date('2024-12-11T00:00:00'), time: '01:00 PM - 03:00 PM' },
+  { id: 'exs1', subject: 'Mathematics', classId: 'c3', date: new Date(2024, 9, 15), time: '09:00 AM - 11:00 AM' },
+  { id: 'exs2', subject: 'Science', classId: 'c3', date: new Date(2024, 9, 16), time: '09:00 AM - 11:00 AM' },
+  { id: 'exs3', subject: 'English', classId: 'c3', date: new Date(2024, 9, 17), time: '09:00 AM - 11:00 AM' },
+  { id: 'exs4', subject: 'Physics', classId: 'c5', date: new Date(2024, 11, 10), time: '01:00 PM - 03:00 PM' },
+  { id: 'exs5', subject: 'Chemistry', classId: 'c5', date: new Date(2024, 11, 11), time: '01:00 PM - 03:00 PM' },
 ];
 
 export default function ExamSchedulePage() {
