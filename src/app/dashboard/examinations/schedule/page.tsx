@@ -22,29 +22,6 @@ const initialExamSchedule = [
   { id: 'exs5', subject: 'Chemistry', classId: 'c5', date: new Date(2024, 11, 11), time: '01:00 PM - 03:00 PM' },
 ];
 
-function Day(props: DayProps & { filteredExams?: typeof initialExamSchedule }) {
-  const { date, displayMonth, filteredExams = [] } = props;
-  const [hasExam, setHasExam] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!date) return;
-    try {
-      const formattedDate = format(date, 'yyyy-MM-dd');
-      const examExists = filteredExams.some((e: any) => format(e.date, 'yyyy-MM-dd') === formattedDate);
-      setHasExam(examExists);
-    } catch (error) {
-      setHasExam(false);
-    }
-  }, [date, filteredExams]);
-
-  return (
-    <DayComponent {...props}>
-      {props.date.getDate()}
-      {hasExam && <span className="absolute bottom-1 right-1 h-2 w-2 rounded-full bg-destructive" />}
-    </DayComponent>
-  );
-}
-
 
 export default function ExamSchedulePage() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -62,6 +39,40 @@ export default function ExamSchedulePage() {
   const examsForSelectedDate = date
     ? filteredExams.filter(e => format(e.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'))
     : [];
+
+  function Day(props: DayProps) {
+    const { date, displayMonth } = props;
+    const [hasExam, setHasExam] = React.useState(false);
+
+    React.useEffect(() => {
+      if (!date || !displayMonth) return;
+      try {
+        const isCurrentMonth = date.getMonth() === displayMonth.getMonth();
+        if (isCurrentMonth) {
+            const formattedDate = format(date, 'yyyy-MM-dd');
+            const examExists = filteredExams.some((e: any) => format(e.date, 'yyyy-MM-dd') === formattedDate);
+            setHasExam(examExists);
+        } else {
+            setHasExam(false);
+        }
+      } catch (error) {
+        setHasExam(false);
+      }
+    }, [date, displayMonth, filteredExams]);
+    
+    if (!date) {
+      return <DayComponent {...props} />;
+    }
+
+    return (
+        <div className="relative">
+            <DayComponent {...props} />
+            {hasExam && (
+            <span className="absolute bottom-1 right-1 h-2 w-2 rounded-full bg-destructive" />
+            )}
+        </div>
+    );
+  }
 
   return (
     <div className="grid gap-6 md:grid-cols-3">
@@ -90,7 +101,7 @@ export default function ExamSchedulePage() {
               onSelect={setDate}
               className="rounded-md border"
               components={{
-                Day: (props) => <Day {...props} filteredExams={filteredExams} />,
+                Day,
               }}
             />
           </CardContent>
