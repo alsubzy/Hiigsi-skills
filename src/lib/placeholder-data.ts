@@ -86,11 +86,11 @@ export const navItems: NavItem[] = [
     icon: Wallet,
     href: '/dashboard/finance',
     children: [
-      { label: 'Fee Structure', href: '/dashboard/finance/suggest-fees' },
-      { label: 'Student Fees', href: '#' },
-      { label: 'Payments', href: '#' },
-      { label: 'Invoices', href: '#' },
-      { label: 'Financial Reports', href: '#' },
+      { label: 'Fee Structure', href: '/dashboard/finance/fee-structure' },
+      { label: 'Student Fees', href: '/dashboard/finance/student-fees' },
+      { label: 'Payments', href: '/dashboard/finance/payments' },
+      { label: 'Invoices', href: '/dashboard/finance/invoices' },
+      { label: 'Financial Reports', href: '/dashboard/finance/financial-reports' },
     ],
   },
    {
