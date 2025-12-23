@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { DayPicker, DayProps } from 'react-day-picker';
 import {
   Select,
   SelectContent,
@@ -14,12 +15,25 @@ import {
 import { academicClasses } from '@/lib/placeholder-data';
 
 const initialExamSchedule = [
-  { id: 'exs1', subject: 'Mathematics', classId: 'c3', date: new Date(2024, 9, 15), time: '09:00 AM - 11:00 AM' },
-  { id: 'exs2', subject: 'Science', classId: 'c3', date: new Date(2024, 9, 16), time: '09:00 AM - 11:00 AM' },
-  { id: 'exs3', subject: 'English', classId: 'c3', date: new Date(2024, 9, 17), time: '09:00 AM - 11:00 AM' },
-  { id: 'exs4', subject: 'Physics', classId: 'c5', date: new Date(2024, 11, 10), time: '01:00 PM - 03:00 PM' },
-  { id: 'exs5', subject: 'Chemistry', classId: 'c5', date: new Date(2024, 11, 11), time: '01:00 PM - 03:00 PM' },
+  { id: 'exs1', subject: 'Mathematics', classId: 'c3', date: new Date('2024-10-15T09:00:00'), time: '09:00 AM - 11:00 AM' },
+  { id: 'exs2', subject: 'Science', classId: 'c3', date: new Date('2024-10-16T09:00:00'), time: '09:00 AM - 11:00 AM' },
+  { id: 'exs3', subject: 'English', classId: 'c3', date: new Date('2024-10-17T09:00:00'), time: '09:00 AM - 11:00 AM' },
+  { id: 'exs4', subject: 'Physics', classId: 'c5', date: new Date('2024-12-10T13:00:00'), time: '01:00 PM - 03:00 PM' },
+  { id: 'exs5', subject: 'Chemistry', classId: 'c5', date: new Date('2024-12-11T13:00:00'), time: '01:00 PM - 03:00 PM' },
 ];
+
+function Day(props: DayProps) {
+  const { date, displayMonth } = props;
+  const filteredExams = (props as any).filteredExams || [];
+  const hasExam = filteredExams.some((e: any) => format(e.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'));
+
+  return (
+    <div className="relative">
+      <DayPicker.Day {...props} />
+      {hasExam && <span className="absolute bottom-1 right-1 h-2 w-2 rounded-full bg-destructive" />}
+    </div>
+  );
+}
 
 export default function ExamSchedulePage() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -65,17 +79,7 @@ export default function ExamSchedulePage() {
               onSelect={setDate}
               className="rounded-md border"
               components={{
-                Day: ({ date: dayDate, ...props }) => {
-                  const hasExam = filteredExams.some(e => format(e.date, 'yyyy-MM-dd') === format(dayDate, 'yyyy-MM-dd'));
-                  return (
-                    <div className="relative">
-                       <props.day date={dayDate} {...props} />
-                      {hasExam && (
-                        <span className="absolute bottom-1 right-1 h-2 w-2 rounded-full bg-destructive" />
-                      )}
-                    </div>
-                  );
-                },
+                Day: (props) => <Day {...props} filteredExams={filteredExams} />,
               }}
             />
           </CardContent>
