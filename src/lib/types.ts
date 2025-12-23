@@ -279,3 +279,16 @@ export type ReportCard = {
         grade: string;
     }>;
 };
+
+// --- Communication Module Types ---
+
+export type Announcement = {
+  id: string;
+  title: string;
+  content: string;
+  authorId: string; // userId of the creator
+  authorName: string;
+  isPublished: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
