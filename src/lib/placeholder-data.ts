@@ -8,8 +8,12 @@ import {
   BarChart3,
   Settings,
   ClipboardCheck,
+  UserCheck,
+  FileText,
+  CalendarCheck,
+  ArrowUp,
 } from 'lucide-react';
-import type { NavItem, User, AcademicClass, Section, Subject, CalendarEvent, TimetableEntry, Syllabus } from './types';
+import type { NavItem, User, AcademicClass, Section, Subject, CalendarEvent, TimetableEntry, Syllabus, Student, Attendance } from './types';
 
 
 export const navItems: NavItem[] = [
@@ -48,15 +52,15 @@ export const navItems: NavItem[] = [
     href: '/dashboard/students',
     children: [
       { label: 'Students', href: '/dashboard/students' },
-      { label: 'Admissions', href: '#' },
-      { label: 'Student Profiles', href: '#' },
-      { label: 'Attendance', href: '#' },
-      { label: 'Promotions', href: '#' },
+      { label: 'Admissions', href: '/dashboard/students/admissions' },
+      { label: 'Student Profiles', href: '/dashboard/students/profiles' },
+      { label: 'Attendance', href: '/dashboard/students/attendance' },
+      { label: 'Promotions', href: '/dashboard/students/promotions' },
     ],
   },
   {
     label: 'Teacher Management',
-    icon: Users,
+    icon: UserCheck,
     href: '#',
     children: [
       { label: 'Teachers', href: '#' },
@@ -67,7 +71,7 @@ export const navItems: NavItem[] = [
   },
   {
     label: 'Examination & Results',
-    icon: ClipboardCheck,
+    icon: FileText,
     href: '#',
     children: [
       { label: 'Exams', href: '#' },
@@ -231,11 +235,11 @@ export const calendarEvents: CalendarEvent[] = [
 ];
 
 export const timetableData: TimetableEntry[] = [
-  { day: 'Monday', '09:00': { subject: 'Math', teacher: 'Mr. Smith' }, '10:00': { subject: 'Science', teacher: 'Ms. Jones' }, '11:00': { subject: 'English', teacher: 'Ms. Davis' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'History', teacher: 'Mr. Brown' }, '14:00': { subject: 'Art', teacher: 'Ms. White' } },
-  { day: 'Tuesday', '09:00': { subject: 'Science', teacher: 'Ms. Jones' }, '10:00': { subject: 'History', teacher: 'Mr. Brown' }, '11:00': { subject: 'Math', teacher: 'Mr. Smith' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'PE', teacher: 'Mr. Green' }, '14:00': { subject: 'English', teacher: 'Ms. Davis' } },
-  { day: 'Wednesday', '09:00': { subject: 'English', teacher: 'Ms. Davis' }, '10:00': { subject: 'Math', teacher: 'Mr. Smith' }, '11:00': { subject: 'Music', teacher: 'Ms. Melody' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'Science', teacher: 'Ms. Jones' }, '14:00': { subject: 'History', teacher: 'Mr. Brown' } },
-  { day: 'Thursday', '09:00': { subject: 'History', teacher: 'Mr. Brown' }, '10:00': { subject: 'PE', teacher: 'Mr. Green' }, '11:00': { subject: 'Science', teacher: 'Ms. Jones' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'English', teacher: 'Ms. Davis' }, '14:00': { subject: 'Math', teacher: 'Mr. Smith' } },
-  { day: 'Friday', '09:00': { subject: 'PE', teacher: 'Mr. Green' }, '10:00': { subject: 'English', teacher: 'Ms. Davis' }, '11:00': { subject: 'Math', teacher: 'Mr. Smith' }, '12:00': { subject: 'Lunch', teacher: '' }, '13:00': { subject: 'Music', teacher: 'Ms. Melody' }, '14:00': { subject: 'Science', teacher: 'Ms. Jones' } },
+  { day: 'Monday', '09:00': { subject: 'Math', teacher: 'Mr. Smith' }, '10:00': { subject: 'Science', teacher: 'Ms. Jones' }, '11:00': { subject: 'English', teacher: 'Ms. Davis' }, '12:00': 'Lunch', '13:00': { subject: 'History', teacher: 'Mr. Brown' }, '14:00': { subject: 'Art', teacher: 'Ms. White' } },
+  { day: 'Tuesday', '09:00': { subject: 'Science', teacher: 'Ms. Jones' }, '10:00': { subject: 'History', teacher: 'Mr. Brown' }, '11:00': { subject: 'Math', teacher: 'Mr. Smith' }, '12:00': 'Lunch', '13:00': { subject: 'PE', teacher: 'Mr. Green' }, '14:00': { subject: 'English', teacher: 'Ms. Davis' } },
+  { day: 'Wednesday', '09:00': { subject: 'English', teacher: 'Ms. Davis' }, '10:00': { subject: 'Math', teacher: 'Mr. Smith' }, '11:00': { subject: 'Music', teacher: 'Ms. Melody' }, '12:00': 'Lunch', '13:00': { subject: 'Science', teacher: 'Ms. Jones' }, '14:00': { subject: 'History', teacher: 'Mr. Brown' } },
+  { day: 'Thursday', '09:00': { subject: 'History', teacher: 'Mr. Brown' }, '10:00': { subject: 'PE', teacher: 'Mr. Green' }, '11:00': { subject: 'Science', teacher: 'Ms. Jones' }, '12:00': 'Lunch', '13:00': { subject: 'English', teacher: 'Ms. Davis' }, '14:00': { subject: 'Math', teacher: 'Mr. Smith' } },
+  { day: 'Friday', '09:00': { subject: 'PE', teacher: 'Mr. Green' }, '10:00': { subject: 'English', teacher: 'Ms. Davis' }, '11:00': { subject: 'Math', teacher: 'Mr. Smith' }, '12:00': 'Lunch', '13:00': { subject: 'Music', teacher: 'Ms. Melody' }, '14:00': { subject: 'Science', teacher: 'Ms. Jones' } },
 ];
 export const timeSlots = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00'];
 
@@ -246,3 +250,19 @@ export const syllabusData: Syllabus[] = [
     { id: 'syl3', title: 'World War I', classId: 'c3', subjectId: 'sub3', description: 'Causes, events, and consequences of the Great War.', term: 'Second Term', status: 'Not Started' },
     { id: 'syl4', title: 'Shakespearean Sonnets', classId: 'c5', subjectId: 'sub4', description: 'Analysis of Shakespeare\'s sonnets.', term: 'First Term', status: 'Completed' },
 ];
+
+export const students: Student[] = [
+    { id: 'st1', studentId: 'ST-001', name: 'Olivia Martinez', avatar: 'https://picsum.photos/seed/olivia/100', classId: 'c3', sectionId: 's3', parentName: 'Carlos Martinez', status: 'Active', admissionDate: '2023-04-12', dob: '2010-05-20', gender: 'Female', email: 'olivia.m@example.com', phone: '555-0101', address: '123 Oak Avenue' },
+    { id: 'st2', studentId: 'ST-002', name: 'Liam Wilson', avatar: 'https://picsum.photos/seed/liam/100', classId: 'c3', sectionId: 's3', parentName: 'Sophia Wilson', status: 'Active', admissionDate: '2023-04-15', dob: '2010-02-18', gender: 'Male', email: 'liam.w@example.com', phone: '555-0102', address: '456 Pine Street' },
+    { id: 'st3', studentId: 'ST-003', name: 'Emma Garcia', avatar: 'https://picsum.photos/seed/emma/100', classId: 'c1', sectionId: 's1', parentName: 'David Garcia', status: 'Active', admissionDate: '2024-01-20', dob: '2016-08-30', gender: 'Female', email: 'emma.g@example.com', phone: '555-0103', address: '789 Maple Drive' },
+    { id: 'st4', studentId: 'ST-004', name: 'Noah Rodriguez', avatar: 'https://picsum.photos/seed/noah/100', classId: 'c5', sectionId: 's4', parentName: 'Isabella Rodriguez', status: 'Inactive', admissionDate: '2022-05-10', dob: '2006-11-22', gender: 'Male', email: 'noah.r@example.com', phone: '555-0104', address: '101 Birch Lane' },
+    { id: 'st5', studentId: 'ST-005', name: 'Ava Smith', avatar: 'https://picsum.photos/seed/ava/100', classId: 'c1', sectionId: 's2', parentName: 'James Smith', status: 'Active', admissionDate: '2024-02-01', dob: '2016-07-14', gender: 'Female', email: 'ava.s@example.com', phone: '555-0105', address: '212 Cedar Road' },
+];
+
+export const initialAttendance: Attendance[] = students
+    .filter(s => s.classId === 'c3') // Default to Grade 7 students
+    .map(student => ({
+        studentId: student.studentId,
+        name: student.name,
+        status: ['present', 'absent', 'late', 'excused'][Math.floor(Math.random() * 4)] as 'present' | 'absent' | 'late' | 'excused',
+    }));

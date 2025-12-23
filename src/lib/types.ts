@@ -65,3 +65,26 @@ export type Syllabus = {
     term: string;
     status: 'Not Started' | 'In Progress' | 'Completed';
 }
+
+export type Student = {
+    id: string;
+    studentId: string;
+    name: string;
+    avatar: string;
+    classId: string;
+    sectionId: string;
+    parentName: string;
+    status: 'Active' | 'Inactive' | 'Graduated';
+    admissionDate: string;
+    dob: string;
+    gender: 'Male' | 'Female';
+    email: string;
+    phone: string;
+    address: string;
+};
+
+export type Attendance = {
+    studentId: string;
+    name: string;
+    status: 'present' | 'absent' | 'late' | 'excused';
+};
