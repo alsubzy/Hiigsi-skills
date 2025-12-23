@@ -24,7 +24,7 @@ const SuggestFeesOutputSchema = z.object({
   transportFee: z.number().describe('Suggested transport fee.'),
   mealsFee: z.number().describe('Suggested meals fee.'),
   accommodationFee: z.number().describe('Suggested accommodation fee, if applicable.'),
-  justification: z.string().describe('The AI's justification for the suggested fees based on the input data.'),
+  justification: z.string().describe('The AI\'s justification for the suggested fees based on the input data.'),
 });
 export type SuggestFeesOutput = z.infer<typeof SuggestFeesOutputSchema>;
 
