@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
-import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import {
   Select,
@@ -13,10 +12,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { academicClasses } from '@/lib/placeholder-data';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
 
-const examSchedule = [
+const initialExamSchedule = [
   { id: 'exs1', subject: 'Mathematics', classId: 'c3', date: new Date(2024, 9, 15), time: '09:00 AM - 11:00 AM' },
   { id: 'exs2', subject: 'Science', classId: 'c3', date: new Date(2024, 9, 16), time: '09:00 AM - 11:00 AM' },
   { id: 'exs3', subject: 'English', classId: 'c3', date: new Date(2024, 9, 17), time: '09:00 AM - 11:00 AM' },
@@ -27,6 +24,13 @@ const examSchedule = [
 export default function ExamSchedulePage() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [selectedClass, setSelectedClass] = React.useState<string>('c3');
+  const [examSchedule, setExamSchedule] = React.useState<typeof initialExamSchedule>([]);
+
+  React.useEffect(() => {
+    // Initialize schedule on the client to avoid hydration issues with Dates
+    setExamSchedule(initialExamSchedule);
+  }, []);
+
 
   const filteredExams = examSchedule.filter(exam => exam.classId === selectedClass);
 
