@@ -2,13 +2,17 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
-import { Inter } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const poppins = Poppins({ 
+  subsets: ['latin'], 
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-sans',
+});
 
 export const metadata: Metadata = {
-  title: 'Coinito',
-  description: 'The easiest way to manage your portfolio.',
+  title: 'Quantico',
+  description: 'Quantico Dashboard',
 };
 
 export default function RootLayout({
@@ -22,7 +26,7 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
-          inter.variable
+          poppins.variable
         )}
         suppressHydrationWarning
       >

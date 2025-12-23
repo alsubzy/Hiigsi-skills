@@ -23,4 +23,8 @@ export type NavItem = {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   active?: boolean;
+  children?: {
+    href: string;
+    label: string;
+  }[];
 };
