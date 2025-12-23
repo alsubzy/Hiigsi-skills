@@ -55,7 +55,7 @@ const kpis = [
 const chartConfig = {
   "Total Students": {
     label: "Total Students",
-    color: "hsl(var(--primary))",
+    color: "#0052FF",
   },
 } satisfies ChartConfig
 

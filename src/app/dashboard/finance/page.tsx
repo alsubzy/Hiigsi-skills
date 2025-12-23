@@ -38,7 +38,7 @@ export default function FinancePage() {
   return (
     <div className="space-y-6">
        <div>
-          <h1 className="text-2xl font-bold font-headline">Finance Dashboard</h1>
+          <h1 className="text-2xl font-bold">Finance Dashboard</h1>
           <p className="text-muted-foreground">
             Manage all financial aspects of your institution.
           </p>

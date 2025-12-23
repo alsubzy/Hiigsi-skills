@@ -77,7 +77,7 @@ export default function SuggestFeesPage() {
     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
       <Card className="lg:col-span-3">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline">
+          <CardTitle className="flex items-center gap-2">
             <Wand2 className="h-6 w-6" />
             AI-Assisted Fee Suggestion
           </CardTitle>

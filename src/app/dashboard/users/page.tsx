@@ -32,7 +32,7 @@ import {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold font-headline">User Management</h1>
+            <h1 className="text-2xl font-bold">User Management</h1>
             <p className="text-muted-foreground">
               Manage all staff, parent, and student accounts.
             </p>

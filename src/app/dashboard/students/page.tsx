@@ -32,7 +32,7 @@ export default function StudentsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold font-headline">Student Management</h1>
+          <h1 className="text-2xl font-bold">Student Management</h1>
           <p className="text-muted-foreground">
             View, add, and manage student profiles.
           </p>
