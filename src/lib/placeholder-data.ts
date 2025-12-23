@@ -1,85 +1,53 @@
-
 import {
   Home,
-  Users,
+  Inbox,
   BookOpen,
-  Wallet,
-  CalendarCheck,
-  BarChart3,
-  ShieldCheck,
+  ClipboardCheck,
+  Users,
+  LogOut,
   Settings,
+  LayoutGrid,
+  PenSquare,
+  Users2
 } from 'lucide-react';
 import type { NavItem, Student, User } from './types';
 
 
 export const navItems: NavItem[] = [
   {
-    label: 'Home',
+    label: 'Dashboard',
     icon: Home,
     href: '/dashboard',
   },
   {
-    label: 'Academics',
-    icon: BookOpen,
-    href: '/dashboard/academics',
-    children: [
-      {
-        label: 'Class Schedule',
-        href: '/dashboard/academics/schedule',
-      },
-      {
-        label: 'Subjects',
-        href: '/dashboard/academics/subjects',
-      },
-      {
-        label: 'Timetable',
-        href: '/dashboard/academics/timetable',
-      },
-      {
-        label: 'Exam Results',
-        href: '/dashboard/academics/results',
-      },
-    ]
+    label: 'Inbox',
+    icon: Inbox,
+    href: '#',
   },
   {
-    label: 'Students',
+    label: 'Lesson',
+    icon: BookOpen,
+    href: '#',
+  },
+  {
+    label: 'Task',
+    icon: ClipboardCheck,
+    href: '#',
+  },
+  {
+    label: 'Group',
     icon: Users,
-    href: '/dashboard/students',
+    href: '#',
   },
   {
-    label: 'Teachers',
-    icon: GraduationCap,
-    href: '/dashboard/teachers',
-  },
-  {
-    label: 'Attendance',
-    icon: CalendarCheck,
-    href: '/dashboard/attendance',
-  },
-  {
-    label: 'Fees & Finance',
-    icon: Wallet,
-    href: '/dashboard/finance',
-  },
-  {
-    label: 'Library',
-    icon: BookOpen,
-    href: '/dashboard/library',
-  },
-  {
-    label: 'Reports',
-    icon: BarChart3,
-    href: '/dashboard/reports',
-  },
-  {
-    label: 'Staff & Roles',
-    icon: ShieldCheck,
-    href: '/dashboard/staff',
-  },
-  {
-    label: 'Settings',
+    label: 'Setting',
     icon: Settings,
-    href: '/dashboard/settings',
+    href: '#',
+  },
+  {
+    label: 'Logout',
+    icon: LogOut,
+    href: '#',
   },
 ];
 
@@ -189,6 +157,99 @@ export const users: User[] = [
     }
 ];
 
+export const progressCards = [
+    {
+        icon: LayoutGrid,
+        progress: '2/8',
+        title: 'UI/UX Design',
+        bgColor: '#E8E7F9',
+        iconColor: '#6A67F3',
+    },
+    {
+        icon: PenSquare,
+        progress: '3/8',
+        title: 'Branding',
+        bgColor: '#FFF2F2',
+        iconColor: '#FF6B6B',
+    },
+    {
+        icon: Users2,
+        progress: '6/12',
+        title: 'Front End',
+        bgColor: '#E5F7F4',
+        iconColor: '#14B8A6',
+    },
+];
+
+export const continueWatching = [
+    {
+        image: 'https://picsum.photos/seed/course1/300/150',
+        tag: 'FRONT END',
+        tagColor: '#FF6B6B',
+        tagBgColor: '#FFF2F2',
+        title: "Beginner's Guide to Becoming a Professional Front-End Developer",
+        mentor: {
+            name: 'Leonardo samsul',
+            avatar: 'https://picsum.photos/seed/leo/40'
+        }
+    },
+    {
+        image: 'https://picsum.photos/seed/course2/300/150',
+        tag: 'UI/UX DESIGN',
+        tagColor: '#6A67F3',
+        tagBgColor: '#E8E7F9',
+        title: 'Optimizing User Experience with the Best UI/UX Design',
+        mentor: {
+            name: 'Bayu Salto',
+            avatar: 'https://picsum.photos/seed/bayu/40'
+        }
+    },
+    {
+        image: 'https://picsum.photos/seed/course3/300/150',
+        tag: 'BRANDING',
+        tagColor: '#14B8A6',
+        tagBgColor: '#E5F7F4',
+        title: 'Reviving and Refresh Company Image',
+        mentor: {
+            name: 'Padhang Satrio',
+            avatar: 'https://picsum.photos/seed/padhang/40'
+        }
+    },
+];
+
+export const yourLessons = [
+    {
+        mentor: {
+            name: 'Padhang Satrio',
+            avatar: 'https://picsum.photos/seed/padhang2/40',
+            date: '2/16/2004',
+        },
+        type: {
+            label: 'UI/UX DESIGN',
+            color: '#6A67F3',
+            bgColor: '#E8E7F9',
+        },
+        desc: 'Understand Of UI/UX Design'
+    }
+];
+
+export const mentorData = [
+  {
+    name: 'Padhang Satrio',
+    role: 'Mentor',
+    avatar: 'https://picsum.photos/seed/mentor1/100',
+  },
+  {
+    name: 'Zakir Horizontal',
+    role: 'Mentor',
+    avatar: 'https://picsum.photos/seed/mentor2/100',
+  },
+  {
+    name: 'Leonardo Samsul',
+    role: 'Mentor',
+    avatar: 'https://picsum.photos/seed/mentor3/100',
+  },
+]
 
 export const kpis = [
     {
@@ -263,8 +324,3 @@ export const kpis = [
       email: 'mike.j@example.com',
     },
   ];
-
-import {
-  GraduationCap
-} from 'lucide-react';
-

@@ -3,9 +3,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   BarChart,
@@ -15,33 +12,26 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  LineChart,
-  Line,
 } from 'recharts';
 import {
   Users,
-  CreditCard,
-  DollarSign,
-  Activity,
   MoreHorizontal,
-  Package,
-  ChevronDown,
-  Filter,
-  Download,
-  Eye,
-  Search,
+  ArrowRight,
+  Heart,
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  PenSquare,
+  Users2,
+  LogOut,
+  Settings
 } from 'lucide-react';
 import {
-  customerActivityData,
-  kpis,
-  productActivityData,
-  recentTransactions,
+  progressCards,
+  continueWatching,
+  yourLessons,
+  mentorData
 } from '@/lib/placeholder-data';
-import { QuanticoLogo } from '@/components/quantico-logo';
 import {
   ChartConfig,
   ChartContainer,
@@ -60,264 +50,187 @@ import {
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import Link from 'next/link';
 
-const customersActive = [
-  { country: 'United Kingdom', flag: '🇬🇧', value: 12628, percentage: 80, color: 'bg-green-500' },
-  { country: 'United States', flag: '🇺🇸', value: 10628, percentage: 70, color: 'bg-blue-500' },
-  { country: 'Sweden', flag: '🇸🇪', value: 8628, percentage: 60, color: 'bg-purple-500' },
-  { country: 'Turkey', flag: '🇹🇷', value: 6628, percentage: 40, color: 'bg-yellow-500' },
-  { country: 'Spain', flag: '🇪🇸', value: 3628, percentage: 30, color: 'bg-red-500' },
-];
-
-const productChartConfig = {
+const chartConfig = {
   value: {
-    label: 'Total Activity',
-  },
-  'To Be Packed': {
-    label: 'To Be Packed',
-    color: '#3B82F6',
-  },
-  'Process Delivery': {
-    label: 'Process Delivery',
-    color: '#EC4899',
-  },
-  'Delivery Done': {
-    label: 'Delivery Done',
-    color: '#14B8A6',
-  },
-  Returned: {
-    label: 'Returned',
-    color: '#F97316',
+    label: 'Visitors',
   },
 } satisfies ChartConfig;
-
-const customerChartConfig = {
-  paid: {
-    label: 'Paid product',
-    color: '#3B82F6',
-  },
-  checkout: {
-    label: 'Checkout Product',
-    color: '#A78BFA',
-  },
-} satisfies ChartConfig;
-
-const renderNull = () => null;
 
 export default function Dashboard() {
-  const totalActivity = productActivityData.reduce((acc, curr) => acc + curr.value, 0);
-
   return (
-    <div className="flex flex-1 flex-col gap-6">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((kpi) => (
-          <Card key={kpi.title}>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-              <div className="space-y-1">
-                <CardTitle className="text-sm font-medium">
-                  {kpi.title}
-                </CardTitle>
-                <div className="text-2xl font-bold">{kpi.value}</div>
-              </div>
-               <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                </Button>
-            </CardHeader>
-            <CardContent className='pt-0'>
-              <ResponsiveContainer width="100%" height={40}>
-                <LineChart data={kpi.chartData}>
-                  <Line type="monotone" dataKey="value" stroke={kpi.change.startsWith('+') ? '#22c55e' : '#ef4444'} strokeWidth={2} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
-              <p className={`text-xs ${kpi.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                {kpi.change}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle>Product Activity</CardTitle>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">1W</Button>
-              <Button variant="secondary" size="sm">1M</Button>
-              <Button variant="outline" size="sm">3W</Button>
-              <Button variant="outline" size="sm">YTD</Button>
-              <Button variant="outline" size="sm">Total</Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={productChartConfig}
-              className="mx-auto aspect-square max-h-[300px]"
-            >
-              <PieChart>
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent hideLabel />}
-                />
-                <Pie
-                  data={productActivityData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius="65%"
-                  strokeWidth={5}
-                  activeIndex={0}
-                  activeShape={({ outerRadius = 0, ...props }) => (
-                    <g>
-                      <circle cx={props.cx} cy={props.cy} r={outerRadius} fill={props.fill} />
-                      <circle
-                        cx={props.cx}
-                        cy={props.cy}
-                        r={props.innerRadius}
-                        fill="var(--card)"
-                      />
-                    </g>
-                  )}
-                >
-                  {productActivityData.map((entry) => (
-                    <Cell key={entry.name} fill={productChartConfig[entry.name as keyof typeof productChartConfig].color} />
-                  ))}
-                </Pie>
-                <Legend content={renderNull} />
-                <text
-                  x="50%"
-                  y="50%"
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="fill-foreground text-3xl font-bold"
-                >
-                  {totalActivity.toLocaleString()}
-                </text>
-                 <text
-                  x="50%"
-                  y="60%"
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="fill-muted-foreground text-sm"
-                >
-                  Total Activity
-                </text>
-              </PieChart>
-            </ChartContainer>
-             <div className="flex flex-col gap-2 text-sm mt-4">
-              {productActivityData.map(item => (
-                <div key={item.name} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: productChartConfig[item.name as keyof typeof productChartConfig].color }}></div>
-                    <span>{item.name}</span>
-                  </div>
-                  <span className="font-medium">{item.value.toLocaleString()}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Customers Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={customerChartConfig} className="min-h-[250px] w-full">
-              <BarChart data={customerActivityData} accessibilityLayer>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={10}
-                />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Bar dataKey="paid" fill="var(--color-paid)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="checkout" fill="var(--color-checkout)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-       <div className="grid gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="col-span-1 lg:col-span-2 space-y-6">
+        <Card className="bg-primary text-primary-foreground" style={{backgroundColor: '#6A67F3'}}>
+          <CardContent className="p-6">
+            <div className="flex justify-between items-start">
               <div>
-                  <CardTitle>Recent Transaction</CardTitle>
-                  <CardDescription>24</CardDescription>
+                <p className="text-sm font-medium">ONLINE COURSE</p>
+                <h2 className="text-3xl font-bold max-w-md mt-2">Sharpen Your Skills with Professional Online Courses</h2>
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="gap-2"><Search className="h-4 w-4"/> Search</Button>
-                <Button variant="outline" size="sm" className="gap-2"><Eye className="h-4 w-4"/> Hide</Button>
-                <Button variant="outline" size="sm" className="gap-2">Customize <ChevronDown className="h-4 w-4"/></Button>
-                <Button variant="outline" size="sm" className="gap-2"><Download className="h-4 w-4"/> Export</Button>
+              <div className="hidden sm:block">
+                <Image src="https://picsum.photos/seed/sparkles/100/100" alt="Sparkles" width={80} height={80} />
               </div>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Product Item</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Date Checkout</TableHead>
-                  <TableHead>Payment Method</TableHead>
-                  <TableHead>Email</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentTransactions.map((tx) => (
-                  <TableRow key={tx.orderId}>
-                    <TableCell className="font-medium text-primary">{tx.orderId}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Image src={tx.product.image} alt={tx.product.name} width={40} height={40} className="rounded-md" />
-                        <div>
-                          <div className="font-semibold">{tx.product.name}</div>
-                          <div className="text-xs text-muted-foreground">{tx.product.desc}</div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium">{tx.price}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={tx.customer.avatar} />
-                          <AvatarFallback>{tx.customer.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span>{tx.customer.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{tx.date}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {tx.payment.method === 'visa' && <CreditCard className="h-5 w-5"/>}
-                        {tx.payment.method === 'mastercard' && <CreditCard className="h-5 w-5"/>}
-                        {tx.payment.method === 'stripe' && <QuanticoLogo className="h-5 w-5 text-purple-600"/>}
-                        <span className="font-medium">{tx.payment.method.charAt(0).toUpperCase() + tx.payment.method.slice(1)}</span>
-                        <span>•••• {tx.payment.last4}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{tx.email}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            </div>
+            <Button variant="secondary" className="mt-6 bg-white text-primary hover:bg-white/90">
+              Join Now <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </CardContent>
+        </Card>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {progressCards.map((card) => (
+            <Card key={card.title}>
+              <CardContent className="p-4">
+                <div className="flex justify-between items-center">
+                   <div className="p-3 rounded-lg" style={{backgroundColor: card.bgColor, color: card.iconColor}}>
+                    <card.icon className="h-6 w-6" />
+                  </div>
+                  <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground mt-4">{card.progress} watched</p>
+                <h3 className="text-lg font-semibold">{card.title}</h3>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Continue Watching</h3>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="icon"><ChevronLeft className="h-4 w-4" /></Button>
+              <Button variant="outline" size="icon"><ChevronRight className="h-4 w-4" /></Button>
+            </div>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {continueWatching.map((course) => (
+              <Card key={course.title}>
+                <CardContent className="p-0">
+                  <div className="relative">
+                    <Image src={course.image} alt={course.title} width={300} height={150} className="w-full h-32 object-cover rounded-t-lg" />
+                    <Button variant="secondary" size="icon" className="absolute top-2 right-2 h-8 w-8 bg-white/50 backdrop-blur-sm">
+                      <Heart className="h-4 w-4 text-white" />
+                    </Button>
+                  </div>
+                  <div className="p-4">
+                    <Badge variant="outline" className="mb-2" style={{color: course.tagColor, borderColor: course.tagColor, backgroundColor: course.tagBgColor }}>{course.tag}</Badge>
+                    <h4 className="font-semibold">{course.title}</h4>
+                    <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={course.mentor.avatar} />
+                        <AvatarFallback>{course.mentor.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <span>{course.mentor.name}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        <div>
+           <h3 className="text-xl font-bold mb-4">Your Lesson</h3>
+            <Card>
+                <CardContent className="p-0">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>MENTOR</TableHead>
+                        <TableHead>TYPE</TableHead>
+                        <TableHead>DESC</TableHead>
+                        <TableHead>ACTION</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {yourLessons.map((lesson) => (
+                        <TableRow key={lesson.mentor.name}>
+                            <TableCell>
+                            <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10">
+                                <AvatarImage src={lesson.mentor.avatar} alt={lesson.mentor.name} />
+                                <AvatarFallback>{lesson.mentor.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                <div className="font-semibold">{lesson.mentor.name}</div>
+                                <div className="text-xs text-muted-foreground">{lesson.mentor.date}</div>
+                                </div>
+                            </div>
+                            </TableCell>
+                            <TableCell>
+                                <Badge variant="outline" style={{color: lesson.type.color, borderColor: lesson.type.color, backgroundColor: lesson.type.bgColor }}>{lesson.type.label}</Badge>
+                            </TableCell>
+                            <TableCell>{lesson.desc}</TableCell>
+                            <TableCell>
+                            <Button variant="ghost" size="icon">
+                                <ArrowRight className="h-4 w-4" />
+                            </Button>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
+
+      </div>
+      <div className="col-span-1 space-y-6">
+        <Card>
+            <CardContent className="p-4">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-semibold">Statistic</h3>
+                    <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <div className="flex flex-col items-center">
+                    <div className="relative">
+                        <Avatar className="h-24 w-24 border-4 border-card">
+                            <AvatarImage src="https://picsum.photos/seed/jason/100" />
+                            <AvatarFallback>JR</AvatarFallback>
+                        </Avatar>
+                        <Badge className="absolute -top-1 -right-2 bg-primary">32%</Badge>
+                    </div>
+                    <h4 className="font-semibold mt-4">Good Morning Jason 🔥</h4>
+                    <p className="text-xs text-muted-foreground">Continue your learning to achieve your target!</p>
+                </div>
+                 <ChartContainer config={chartConfig} className="h-[120px] w-full mt-4">
+                    <BarChart accessibilityLayer data={[{'1-10 Aug': 45}, {'11-20 Aug': 55}, {'21-30 Aug': 30}]}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
+                        <YAxis hide/>
+                        <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                        <Bar dataKey="value" fill="#6A67F3" radius={8} />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+        <Card>
+            <CardContent className="p-4">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-semibold">Your mentor</h3>
+                    <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-5 w-5" /></Button>
+                </div>
+                <div className="space-y-4">
+                    {mentorData.map(mentor => (
+                        <div key={mentor.name} className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10">
+                                    <AvatarImage src={mentor.avatar} />
+                                    <AvatarFallback>{mentor.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold">{mentor.name}</p>
+                                    <p className="text-xs text-muted-foreground">{mentor.role}</p>
+                                </div>
+                            </div>
+                            <Button variant="outline" size="sm">Follow</Button>
+                        </div>
+                    ))}
+                </div>
+                <Button variant="link" className="w-full mt-2">See All</Button>
+            </CardContent>
         </Card>
       </div>
     </div>

@@ -3,17 +3,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Bell,
-  ChevronDown,
   ChevronRight,
-  CircleHelp,
   Home,
   Menu,
-  Package,
-  Package2,
+  MoreHorizontal,
   Search,
-  ShoppingCart,
-  Users,
-  MoreHorizontal
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -23,13 +17,6 @@ import {
 } from '@/components/ui/collapsible';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,9 +32,8 @@ import { navItems } from '@/lib/placeholder-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState, useEffect } from 'react';
 import React from 'react';
-import { QuanticoLogo } from '@/components/quantico-logo';
 import { NavItem } from '@/lib/types';
-
+import { Logo } from '@/components/logo';
 
 function NavLink({
   item,
@@ -125,57 +111,64 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const breadcrumb = pathname.split('/').filter(p => p);
-
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-card md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-16 items-center gap-2 border-b px-4 lg:px-6">
-            <QuanticoLogo />
-            <div className='flex flex-col'>
-              <span className="font-semibold">EduSmart</span>
-              <span className="text-xs text-muted-foreground">ID: SCH-2025</span>
-            </div>
+            <Logo />
+            <span className="font-semibold">Coursue</span>
           </div>
           <div className="flex-1 overflow-y-auto">
             <nav className="grid items-start p-2 text-sm font-medium lg:p-4">
-              {navItems.map((item) => (
+              <span className='px-3 py-2 text-xs font-semibold text-muted-foreground'>OVERVIEW</span>
+              {navItems.slice(0, 5).map((item) => (
                 <NavLink key={item.label} item={item} pathname={pathname} />
               ))}
+               <span className='px-3 py-2 mt-4 text-xs font-semibold text-muted-foreground'>FRIENDS</span>
+                <div className='flex flex-col gap-2'>
+                  <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                      <Avatar className="h-8 w-8 border">
+                        <AvatarImage src="https://picsum.photos/seed/bagas/100" />
+                        <AvatarFallback>BM</AvatarFallback>
+                      </Avatar>
+                      <div className='flex flex-col'>
+                        <span className='font-semibold text-sm'>Bagas Mahpie</span>
+                        <span className='text-xs'>Friend</span>
+                      </div>
+                  </Link>
+                   <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                      <Avatar className="h-8 w-8 border">
+                        <AvatarImage src="https://picsum.photos/seed/dandy/100" />
+                        <AvatarFallback>SD</AvatarFallback>
+                      </Avatar>
+                      <div className='flex flex-col'>
+                        <span className='font-semibold text-sm'>Sir Dandy</span>
+                        <span className='text-xs'>Old Friend</span>
+                      </div>
+                  </Link>
+                   <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                      <Avatar className="h-8 w-8 border">
+                        <AvatarImage src="https://picsum.photos/seed/jhon/100" />
+                        <AvatarFallback>JT</AvatarFallback>
+                      </Avatar>
+                      <div className='flex flex-col'>
+                        <span className='font-semibold text-sm'>Jhon Tosan</span>
+                        <span className='text-xs'>Friend</span>
+                      </div>
+                  </Link>
+                </div>
+
             </nav>
           </div>
           <div className="mt-auto flex flex-col gap-4 p-4">
-            <Card className="bg-muted">
-              <CardHeader className="p-4">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <CircleHelp className="h-5 w-5" />
-                  Need support?
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Get your questions answered.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <Button size="sm" className="w-full">
-                  Contact Admin
-                </Button>
-              </CardContent>
-            </Card>
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 border">
-                <AvatarImage src="https://picsum.photos/seed/principal/100/100" />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="font-semibold">Admin</span>
-                <span className="text-xs text-muted-foreground">admin@edusmart.com</span>
-              </div>
-              <Button variant="ghost" size="icon" className="ml-auto">
-                <MoreHorizontal className="h-5 w-5"/>
-              </Button>
-            </div>
+             <nav className="grid items-start text-sm font-medium">
+               <span className='px-3 py-2 text-xs font-semibold text-muted-foreground'>SETTINGS</span>
+                {navItems.slice(5).map((item) => (
+                    <NavLink key={item.label} item={item} pathname={pathname} />
+                ))}
+            </nav>
           </div>
         </div>
       </div>
@@ -194,82 +187,94 @@ export default function DashboardLayout({
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col p-0">
               <div className="flex h-16 items-center gap-2 border-b px-4">
-                <QuanticoLogo />
-                 <div className='flex flex-col'>
-                  <span className="font-semibold">EduSmart</span>
-                  <span className="text-xs text-muted-foreground">ID: SCH-2025</span>
-                </div>
+                <Logo />
+                <span className="font-semibold">Coursue</span>
               </div>
               <div className="flex-1 overflow-y-auto">
-                <nav className="grid items-start p-4 text-sm font-medium">
-                  {navItems.map((item) => (
-                    <NavLink key={item.label} item={item} pathname={pathname} />
+                 <nav className="grid items-start p-2 text-sm font-medium lg:p-4">
+                    <span className='px-3 py-2 text-xs font-semibold text-muted-foreground'>OVERVIEW</span>
+                    {navItems.slice(0, 5).map((item) => (
+                      <NavLink key={item.label} item={item} pathname={pathname} />
+                    ))}
+                    <span className='px-3 py-2 mt-4 text-xs font-semibold text-muted-foreground'>FRIENDS</span>
+                      <div className='flex flex-col gap-2'>
+                        <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                            <Avatar className="h-8 w-8 border">
+                              <AvatarImage src="https://picsum.photos/seed/bagas/100" />
+                              <AvatarFallback>BM</AvatarFallback>
+                            </Avatar>
+                            <div className='flex flex-col'>
+                              <span className='font-semibold text-sm'>Bagas Mahpie</span>
+                              <span className='text-xs'>Friend</span>
+                            </div>
+                        </Link>
+                        <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                            <Avatar className="h-8 w-8 border">
+                              <AvatarImage src="https://picsum.photos/seed/dandy/100" />
+                              <AvatarFallback>SD</AvatarFallback>
+                            </Avatar>
+                            <div className='flex flex-col'>
+                              <span className='font-semibold text-sm'>Sir Dandy</span>
+                              <span className='text-xs'>Old Friend</span>
+                            </div>
+                        </Link>
+                        <Link href="#" className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                            <Avatar className="h-8 w-8 border">
+                              <AvatarImage src="https://picsum.photos/seed/jhon/100" />
+                              <AvatarFallback>JT</AvatarFallback>
+                            </Avatar>
+                            <div className='flex flex-col'>
+                              <span className='font-semibold text-sm'>Jhon Tosan</span>
+                              <span className='text-xs'>Friend</span>
+                            </div>
+                        </Link>
+                      </div>
+                  </nav>
+              </div>
+              <div className="mt-auto flex flex-col gap-4 p-4">
+                 <nav className="grid items-start text-sm font-medium">
+                  <span className='px-3 py-2 text-xs font-semibold text-muted-foreground'>SETTINGS</span>
+                  {navItems.slice(5).map((item) => (
+                      <NavLink key={item.label} item={item} pathname={pathname} />
                   ))}
                 </nav>
               </div>
-              <div className="mt-auto flex flex-col gap-4 p-4">
-                <Card className="bg-muted">
-                  <CardHeader className="p-4">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <CircleHelp className="h-5 w-5" />
-                      Need support?
-                    </CardTitle>
-                    <CardDescription className="text-xs">
-                      Get your questions answered.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <Button size="sm" className="w-full">
-                      Contact Admin
-                    </Button>
-                  </CardContent>
-                </Card>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border">
-                    <AvatarImage src="https://picsum.photos/seed/principal/100/100" />
-                    <AvatarFallback>AD</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="font-semibold">Admin</span>
-                    <span className="text-xs text-muted-foreground">admin@edusmart.com</span>
-                  </div>
-                  <Button variant="ghost" size="icon" className="ml-auto">
-                    <MoreHorizontal className="h-5 w-5"/>
-                  </Button>
-                </div>
-              </div>
             </SheetContent>
           </Sheet>
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-             <Link href="/dashboard" className="text-foreground"><Home className="h-5 w-5" /></Link>
-            {breadcrumb.map((item, index) => (
-              <React.Fragment key={item}>
-                <ChevronRight className="h-4 w-4" />
-                <Link href={`/${breadcrumb.slice(0, index + 1).join('/')}`} className="capitalize text-foreground">
-                  {item}
-                </Link>
-              </React.Fragment>
-            ))}
+          <div className="w-full flex-1">
+            <form>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  className="w-full appearance-none bg-background pl-10 md:w-2/3 lg:w-1/3"
+                  placeholder="Search your course..."
+                />
+              </div>
+            </form>
           </div>
           <div className="ml-auto flex items-center gap-4">
-            <div className="flex -space-x-2">
-              <Avatar className="h-8 w-8 border-2 border-card">
-                <AvatarImage src="https://picsum.photos/seed/user1/100" />
-                <AvatarFallback>U1</AvatarFallback>
-              </Avatar>
-              <Avatar className="h-8 w-8 border-2 border-card">
-                <AvatarImage src="https://picsum.photos/seed/user2/100" />
-                <AvatarFallback>U2</AvatarFallback>
-              </Avatar>
-              <Avatar className="h-8 w-8 border-2 border-card">
-                <AvatarImage src="https://picsum.photos/seed/user3/100" />
-                <AvatarFallback>U3</AvatarFallback>
-              </Avatar>
-              <Avatar className="h-8 w-8 border-2 border-card">
-                <AvatarFallback>+9</AvatarFallback>
-              </Avatar>
-            </div>
-            <Button>Invite</Button>
+            <Button variant="ghost" size="icon">
+              <Bell className="h-5 w-5" />
+              <span className="sr-only">Notifications</span>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                   <Avatar className="h-10 w-10 border">
+                    <AvatarImage src="https://picsum.photos/seed/jason/100" />
+                    <AvatarFallback>JR</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Jason Ranti</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem>Support</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-8 bg-background">
