@@ -79,7 +79,6 @@ enum LogLevel {
 
 model User {
   id              String           @id @default(cuid())
-  clerkUserId     String?          @unique
   firstName       String
   lastName        String
   email           String           @unique
@@ -101,7 +100,6 @@ model User {
   teacher         Teacher?
 
   @@index([email])
-  @@index([clerkUserId])
 }
 
 model Role {

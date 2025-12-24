@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
 
 interface AuthContextType {
     user: any;
@@ -13,33 +12,28 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
     const [dbUser, setDbUser] = useState<any>(null);
     const [permissions, setPermissions] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function fetchUser() {
-            if (isClerkLoaded && clerkUser) {
-                try {
-                    const res = await fetch('/api/auth/me');
-                    if (res.ok) {
-                        const data = await res.json();
-                        setDbUser(data.user);
-                        setPermissions(data.permissions);
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch user permissions:', error);
-                } finally {
-                    setIsLoading(false);
+            try {
+                const res = await fetch('/api/auth/me');
+                if (res.ok) {
+                    const data = await res.json();
+                    setDbUser(data.user);
+                    setPermissions(data.permissions);
                 }
-            } else if (isClerkLoaded && !clerkUser) {
+            } catch (error) {
+                console.error('Failed to fetch user permissions:', error);
+            } finally {
                 setIsLoading(false);
             }
         }
 
         fetchUser();
-    }, [clerkUser, isClerkLoaded]);
+    }, []);
 
     const hasPermission = (action: string, subject: string) => {
         // UNIVERSAL ADMIN ACCESS BYPASS: Every authenticated user is treated as an Admin

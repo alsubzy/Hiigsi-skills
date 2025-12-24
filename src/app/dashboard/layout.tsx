@@ -135,11 +135,10 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const { user, isLoading } = useAuth();
-  const { signOut } = useClerk();
   const router = useRouter();
 
   const handleSignOut = async () => {
-    await signOut();
+    // Mock Logout
     router.push('/sign-in');
   };
 

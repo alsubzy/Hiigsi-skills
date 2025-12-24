@@ -39,7 +39,6 @@ export async function createStaff(data: {
     firstName: string;
     lastName: string;
     phone?: string;
-    clerkUserId?: string;
     roleIds: string[];
 }, userId?: string) {
     const staff = await prisma.user.create({
@@ -48,7 +47,6 @@ export async function createStaff(data: {
             firstName: data.firstName,
             lastName: data.lastName,
             phone: data.phone,
-            clerkUserId: data.clerkUserId,
             roles: {
                 create: data.roleIds.map(roleId => ({ roleId }))
             }

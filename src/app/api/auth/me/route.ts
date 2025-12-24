@@ -1,18 +1,13 @@
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
-import { getUserPermissions } from "@/lib/auth";
 
 export async function GET() {
     try {
-        const user = await currentUser();
+        // MOCK AUTH: In a real system, you would check session/token here.
+        // For now, we'll return a bypass admin user if it exists.
 
-        if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        const dbUser = await prisma.user.findUnique({
-            where: { clerkUserId: user.id },
+        const dbUser = await prisma.user.findFirst({
+            where: { email: { contains: "admin" } }, // Simple heuristic for mock
             include: {
                 roles: {
                     include: {
@@ -23,23 +18,11 @@ export async function GET() {
         });
 
         if (!dbUser) {
-            return NextResponse.json({ error: "User not found in database" }, { status: 404 });
+            return NextResponse.json({ error: "No mock admin user found" }, { status: 404 });
         }
 
-        const roles = ["Admin"]; // UNIVERSAL ADMIN ACCESS
-        const primaryRole = "Admin";
-
-        // --- UNIVERSAL ADMIN SYNC (Self-Healing) ---
-        const clerkRole = (user.unsafeMetadata?.role as string) || (user.publicMetadata?.role as string);
-
-        if (clerkRole !== primaryRole) {
-            console.log(`[AUTH] Universal Admin Sync triggered for ${dbUser.email}.`);
-            const { syncClerkMetadata } = await import("@/lib/auth");
-            await syncClerkMetadata(dbUser.id);
-        }
-        // ------------------------------------------
-
-        const permissions = await getUserPermissions(dbUser.id);
+        const roles = ["Admin"];
+        const permissions = ["ALL_ACCESS"]; // Mock permissions
 
         return NextResponse.json({
             user: {

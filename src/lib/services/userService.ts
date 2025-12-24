@@ -67,16 +67,17 @@ export async function createUser(data: unknown): Promise<BackendUser> {
   if (!role) {
     throw new ApiError(400, `Role with ID ${roleId} does not exist.`);
   }
-  
+
   // In a real app, you would hash the password here before saving
   // const hashedPassword = await hash(password, 10);
-  const newUser = await userData.create({ 
-      name, 
-      email, 
-      password, // Storing plain text for mock purposes ONLY
-      roleId, 
-      role: role.name as any // Cast because role name matches type
-    });
+  const newUser = await userData.create({
+    name,
+    email,
+    password, // Storing plain text for mock purposes ONLY
+    roleId,
+    role: role.name as any,
+    avatar: `https://picsum.photos/seed/${email}/100`
+  });
 
   // Log this action. In a real app, the creating user's ID would be passed here.
   await createLog({ userId: 'admin-user-id', action: 'create_user', module: 'Users', details: `Created user: ${name} (${email})` });
@@ -100,14 +101,14 @@ export async function updateUser(id: string, data: unknown): Promise<BackendUser
   if (!user) {
     throw new ApiError(404, 'User not found.');
   }
-  
+
   const updates = validation.data;
-  
+
   // If roleId is being updated, verify it exists
-  if(updates.roleId) {
+  if (updates.roleId) {
     const role = await roleData.findById(updates.roleId);
     if (!role) {
-        throw new ApiError(400, `Role with ID ${updates.roleId} does not exist.`);
+      throw new ApiError(400, `Role with ID ${updates.roleId} does not exist.`);
     }
     (updates as Partial<BackendUser>).role = role.name as any;
   }
@@ -118,7 +119,7 @@ export async function updateUser(id: string, data: unknown): Promise<BackendUser
   }
 
   await createLog({ userId: 'admin-user-id', action: 'update_user', module: 'Users', details: `Updated user ID: ${id}` });
-  
+
   return updatedUser;
 }
 

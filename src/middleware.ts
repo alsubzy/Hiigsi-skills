@@ -1,24 +1,15 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-// Define public routes that don't require authentication
-const isPublicRoute = createRouteMatcher([
-    "/sign-in(.*)",
-    "/sign-up(.*)",
-    "/api/webhooks(.*)", // Public webhooks
-]);
-
-export default clerkMiddleware(async (auth, request) => {
-    // 1. Protect all non-public routes - Universal Access for all authenticated users
-    if (!isPublicRoute(request)) {
-        await auth.protect();
-    }
-});
+export function middleware(request: NextRequest) {
+    // Authentication check logic can be added here once a new system is implemented.
+    // For now, allow all requests.
+    return NextResponse.next();
+}
 
 export const config = {
     matcher: [
-        // Skip Next.js internals and all static files, unless found in search params
         '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-        // Always run for API routes
         '/(api|trpc)(.*)',
     ],
 };

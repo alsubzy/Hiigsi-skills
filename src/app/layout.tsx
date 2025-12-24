@@ -4,7 +4,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { Inter } from 'next/font/google';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import { ClerkProvider } from '@clerk/nextjs';
 import { AuthProvider } from '@/components/auth-provider';
 
 const inter = Inter({
@@ -32,13 +31,11 @@ export default function RootLayout({
         )}
         suppressHydrationWarning
       >
-        <ClerkProvider>
-          <FirebaseClientProvider>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-          </FirebaseClientProvider>
-        </ClerkProvider>
+        <FirebaseClientProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </FirebaseClientProvider>
         <Toaster />
       </body>
     </html>

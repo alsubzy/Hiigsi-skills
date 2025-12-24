@@ -1,22 +1,15 @@
 import { NextResponse } from "next/server";
 import { hasPermission } from "@/lib/auth";
-import { currentUser } from "@clerk/nextjs/server";
 
 export type ActionHandler = (req: Request, ...args: any[]) => Promise<Response>;
 
 export function withAuth(action: string, subject: string, handler: ActionHandler) {
     return async (req: Request, ...args: any[]) => {
-        const user = await currentUser();
-
-        if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        // Map Clerk user to our DB user
-        // Assuming clerkUserId is stored in our User model
+        // MOCK AUTH: In a real system, you'd check session/token here.
+        // For now, we'll bypass and use a mock admin user.
         const dbUser = await import("@/lib/prisma").then((m) =>
-            m.default.user.findUnique({
-                where: { clerkUserId: user.id },
+            m.default.user.findFirst({
+                where: { email: { contains: "admin" } },
             })
         );
 
