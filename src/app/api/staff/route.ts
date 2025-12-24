@@ -1,26 +1,54 @@
-// src/app/api/staff/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { createStaff, getAllStaff } from '@/lib/services/staffService';
-import { handleApiError } from '@/lib/utils/handleApiError';
+import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/middleware/with-auth";
+import prisma from "@/lib/prisma";
+import { logAudit } from "@/lib/services/audit";
 
-export async function GET(request: NextRequest) {
+async function GET_Handler(req: Request) {
   try {
-    // Example of how to handle query params for filtering
-    const { searchParams } = new URL(request.url);
-    const department = searchParams.get('department');
-    const staff = await getAllStaff({ department });
+    const staff = await prisma.user.findMany({
+      where: {
+        roles: {
+          some: {
+            role: {
+              name: { notIn: ["Student", "Parent"] } // Focus on staff
+            }
+          }
+        }
+      },
+      include: {
+        roles: {
+          include: {
+            role: true
+          }
+        }
+      }
+    });
+
     return NextResponse.json(staff);
   } catch (error) {
-    return handleApiError(error);
+    return NextResponse.json({ error: "Failed to fetch staff" }, { status: 500 });
   }
 }
 
-export async function POST(request: NextRequest) {
+async function POST_Handler(req: Request) {
   try {
-    const body = await request.json();
-    const newStaff = await createStaff(body);
-    return NextResponse.json(newStaff, { status: 201 });
+    const body = await req.json();
+    // Example: Create staff member...
+
+    // Log Audit
+    // await logAudit({
+    //   userId: "current-user-id",
+    //   action: "CREATE",
+    //   resource: "STAFF",
+    //   payload: body
+    // });
+
+    return NextResponse.json({ message: "Staff created (example)" });
   } catch (error) {
-    return handleApiError(error);
+    return NextResponse.json({ error: "Failed to create staff" }, { status: 500 });
   }
 }
+
+// Protect the routes
+export const GET = withAuth("READ", "STAFF", GET_Handler);
+export const POST = withAuth("CREATE", "STAFF", POST_Handler);

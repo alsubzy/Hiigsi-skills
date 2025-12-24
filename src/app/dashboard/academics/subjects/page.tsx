@@ -14,14 +14,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { subjects as initialSubjects, academicClasses, users as allUsers } from '@/lib/placeholder-data';
-import type { Subject } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
 const subjectSchema = z.object({
   name: z.string().min(2, 'Subject name is required.'),
   classId: z.string().min(1, 'Class is required.'),
-  teacher: z.string().optional(),
+  teacherId: z.string().optional(),
   status: z.enum(['Active', 'Inactive']),
 });
 
@@ -29,46 +27,94 @@ type SubjectFormValues = z.infer<typeof subjectSchema>;
 
 export default function SubjectsPage() {
   const { toast } = useToast();
-  const [subjects, setSubjects] = React.useState<Subject[]>(initialSubjects);
+  const [subjects, setSubjects] = React.useState<any[]>([]);
+  const [classes, setClasses] = React.useState<any[]>([]);
+  const [teachers, setTeachers] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [editingSubject, setEditingSubject] = React.useState<Subject | null>(null);
+  const [editingSubject, setEditingSubject] = React.useState<any | null>(null);
 
   const form = useForm<SubjectFormValues>({
     resolver: zodResolver(subjectSchema),
-    defaultValues: { name: '', classId: '', teacher: '', status: 'Active' },
+    defaultValues: { name: '', classId: '', teacherId: '', status: 'Active' },
   });
-  
-  const teachers = allUsers.filter(u => u.role === 'Teacher');
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [subRes, classRes, teacherRes] = await Promise.all([
+        fetch('/api/academics/subjects'),
+        fetch('/api/academics/classes'),
+        fetch('/api/staff') // Fetch staff to get teachers
+      ]);
+      if (subRes.ok && classRes.ok && teacherRes.ok) {
+        setSubjects(await subRes.json());
+        setClasses(await classRes.json());
+        setTeachers(await teacherRes.json());
+      }
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
 
   const getClassName = (classId: string) => {
-    return academicClasses.find(c => c.id === classId)?.name || 'N/A';
+    return classes.find(c => c.id === classId)?.name || 'N/A';
   }
 
-  const onSubmit = (data: SubjectFormValues) => {
-    if (editingSubject) {
-      setSubjects(subjects.map(s => s.id === editingSubject.id ? { ...s, ...data } : s));
-      toast({ title: 'Subject Updated', description: 'The subject has been updated.' });
-    } else {
-      const newSubject: Subject = { id: `sub${subjects.length + 1}`, ...data };
-      setSubjects([newSubject, ...subjects]);
-      toast({ title: 'Subject Created', description: 'A new subject has been added.' });
+  const getTeacherName = (teacherId?: string) => {
+    if (!teacherId) return 'Unassigned';
+    const teacher = teachers.find(t => t.id === teacherId);
+    return teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unassigned';
+  }
+
+  const onSubmit = async (data: SubjectFormValues) => {
+    try {
+      const method = editingSubject ? 'PUT' : 'POST';
+      const url = editingSubject ? `/api/academics/subjects/${editingSubject.id}` : '/api/academics/subjects';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        toast({ title: editingSubject ? 'Subject Updated' : 'Subject Created' });
+        fetchData();
+        form.reset();
+        setIsDialogOpen(false);
+        setEditingSubject(null);
+      } else {
+        toast({ title: 'Error', description: 'Failed to save subject', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save subject', variant: 'destructive' });
     }
-    form.reset();
-    setIsDialogOpen(false);
-    setEditingSubject(null);
   };
 
-  const handleEdit = (subject: Subject) => {
+  const handleEdit = (subject: any) => {
     setEditingSubject(subject);
-    form.reset(subject);
+    form.reset({
+      ...subject,
+      teacherId: subject.teacherId || '',
+      status: subject.status === 'Active' || subject.status === 'Inactive' ? subject.status : 'Active'
+    });
     setIsDialogOpen(true);
   };
-  
+
   const handleAddNew = () => {
     setEditingSubject(null);
-    form.reset({ name: '', classId: '', teacher: '', status: 'Active' });
+    form.reset({ name: '', classId: '', teacherId: '', status: 'Active' });
     setIsDialogOpen(true);
   }
+
+  if (isLoading) return <div>Loading subjects...</div>;
 
   return (
     <Card>
@@ -98,7 +144,7 @@ export default function SubjectsPage() {
                 <TableRow key={subject.id}>
                   <TableCell className="font-medium">{subject.name}</TableCell>
                   <TableCell>{getClassName(subject.classId)}</TableCell>
-                  <TableCell>{subject.teacher || 'Unassigned'}</TableCell>
+                  <TableCell>{getTeacherName(subject.teacherId)}</TableCell>
                   <TableCell>
                     <Badge variant={subject.status === 'Active' ? 'default' : 'secondary'}>{subject.status}</Badge>
                   </TableCell>
@@ -146,10 +192,10 @@ export default function SubjectsPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Class / Grade</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
                       <SelectContent>
-                        {academicClasses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -158,15 +204,15 @@ export default function SubjectsPage() {
               />
               <FormField
                 control={form.control}
-                name="teacher"
+                name="teacherId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Teacher (Optional)</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Assign a teacher" /></SelectTrigger></FormControl>
                       <SelectContent>
                         <SelectItem value="">Unassigned</SelectItem>
-                        {teachers.map(t => <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>)}
+                        {teachers.map(t => <SelectItem key={t.id} value={t.id}>{t.firstName} {t.lastName}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -179,7 +225,7 @@ export default function SubjectsPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl>
                       <SelectContent>
                         <SelectItem value="Active">Active</SelectItem>

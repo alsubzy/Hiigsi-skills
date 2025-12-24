@@ -4,9 +4,11 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { Inter } from 'next/font/google';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { ClerkProvider } from '@clerk/nextjs';
+import { AuthProvider } from '@/components/auth-provider';
 
-const inter = Inter({ 
-  subsets: ['latin'], 
+const inter = Inter({
+  subsets: ['latin'],
   variable: '--font-sans',
 });
 
@@ -30,9 +32,13 @@ export default function RootLayout({
         )}
         suppressHydrationWarning
       >
-        <FirebaseClientProvider>
-          {children}
-        </FirebaseClientProvider>
+        <ClerkProvider>
+          <FirebaseClientProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </FirebaseClientProvider>
+        </ClerkProvider>
         <Toaster />
       </body>
     </html>

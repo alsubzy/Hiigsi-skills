@@ -1,28 +1,27 @@
-// src/app/api/academics/subjects/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { getSubjectsByClass, createSubject } from '@/lib/services/academicService';
-import { handleApiError } from '@/lib/utils/handleApiError';
+import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/middleware/with-auth";
+import { getSubjects, createSubject } from "@/lib/services/subjects";
 
-export async function GET(request: NextRequest) {
+async function GET_Handler(req: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const classId = searchParams.get('classId');
-    if (!classId) {
-        return NextResponse.json({ message: 'classId query parameter is required' }, { status: 400 });
-    }
-    const subjects = await getSubjectsByClass(classId);
+    const url = new URL(req.url);
+    const classId = url.searchParams.get("classId");
+    const subjects = await getSubjects(classId || undefined);
     return NextResponse.json(subjects);
   } catch (error) {
-    return handleApiError(error);
+    return NextResponse.json({ error: "Failed to fetch subjects" }, { status: 500 });
   }
 }
 
-export async function POST(request: NextRequest) {
+async function POST_Handler(req: Request) {
   try {
-    const body = await request.json();
+    const body = await req.json();
     const newSubject = await createSubject(body);
     return NextResponse.json(newSubject, { status: 201 });
   } catch (error) {
-    return handleApiError(error);
+    return NextResponse.json({ error: "Failed to create subject" }, { status: 500 });
   }
 }
+
+export const GET = withAuth("READ", "SUBJECT", GET_Handler);
+export const POST = withAuth("CREATE", "SUBJECT", POST_Handler);

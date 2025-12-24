@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
   ChevronDown,
@@ -8,7 +8,9 @@ import {
   MoreHorizontal,
   Search,
   LogOut,
+  User,
 } from 'lucide-react';
+import { useClerk } from '@clerk/nextjs';
 import {
   Popover,
   PopoverContent,
@@ -33,6 +35,8 @@ import React from 'react';
 import { NavItem } from '@/lib/types';
 import { Logo } from '@/components/logo';
 
+import { useAuth } from '@/components/auth-provider';
+
 function NavLink({
   item,
   pathname,
@@ -40,10 +44,22 @@ function NavLink({
   item: NavItem;
   pathname: string;
 }) {
+  const { hasPermission, user } = useAuth();
+
+  // UNIVERSAL ADMIN ACCESS: Every user goes to the Admin Dashboard
+  const href = (item.label === 'Dashboard' && item.href === '/dashboard')
+    ? '/admin/dashboard'
+    : item.href;
+
+  // Check if user has permission for this item
+  if (item.permission && !hasPermission(item.permission.action, item.permission.subject)) {
+    return null;
+  }
+
   const isParentActive =
-    (!!item.href && pathname.startsWith(item.href) && item.href !== '/dashboard');
-  const isActive = pathname === item.href;
-  
+    (!!href && pathname.startsWith(href) && href !== '/dashboard' && href !== '/admin/dashboard');
+  const isActive = pathname === href;
+
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -55,6 +71,13 @@ function NavLink({
   }
 
   if (item.children && item.children.length > 0) {
+    // Filter children based on permissions
+    const visibleChildren = item.children.filter(child =>
+      !child.permission || hasPermission(child.permission.action, child.permission.subject)
+    );
+
+    if (visibleChildren.length === 0) return null;
+
     return (
       <Popover>
         <PopoverTrigger asChild>
@@ -71,7 +94,7 @@ function NavLink({
         </PopoverTrigger>
         <PopoverContent side="right" align="start" className="ml-2 p-1 w-56 bg-card border-border shadow-md">
           <nav className="grid gap-1">
-            {item.children.map((child) => (
+            {visibleChildren.map((child) => (
               <Link
                 key={child.label}
                 href={child.href}
@@ -92,11 +115,11 @@ function NavLink({
   return (
     <Link
       key={item.label}
-      href={item.href}
+      href={href}
       className={cn(
         'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:text-primary',
         isActive ? 'bg-muted text-primary font-semibold' : '',
-        
+
       )}
     >
       <item.icon className="h-5 w-5" />
@@ -111,6 +134,18 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user, isLoading } = useAuth();
+  const { signOut } = useClerk();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/sign-in');
+  };
+
+  if (isLoading) {
+    return <div className="flex h-screen w-full items-center justify-center">Loading...</div>;
+  }
 
   return (
     <div className="grid h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
@@ -141,24 +176,24 @@ export default function DashboardLayout({
                 >
                   <Avatar className="h-10 w-10 border">
                     <AvatarImage src={"https://picsum.photos/seed/principal/100"} />
-                    <AvatarFallback>P</AvatarFallback>
+                    <AvatarFallback>{user?.firstName?.[0] || 'U'}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start">
-                    <span className="font-semibold">Principal</span>
+                    <span className="font-semibold">{user?.firstName} {user?.lastName}</span>
                     <span className="text-xs text-muted-foreground">
-                      principal@hiigsi.edu
+                      {user?.email}
                     </span>
                   </div>
                   <MoreHorizontal className="ml-auto h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel>Principal Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{user?.roles?.[0] || 'User'} Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
@@ -198,7 +233,7 @@ export default function DashboardLayout({
                 </nav>
               </div>
               <div className="mt-auto flex flex-col gap-4 p-4 border-t">
-                 
+
               </div>
             </SheetContent>
           </Sheet>
@@ -237,7 +272,7 @@ export default function DashboardLayout({
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>

@@ -1,23 +1,25 @@
-// src/app/api/settings/school-profile/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { getSchoolProfile, updateSchoolProfile } from '@/lib/services/settingsService';
-import { handleApiError } from '@/lib/utils/handleApiError';
+import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/middleware/with-auth";
+import { getSchoolProfile, updateSchoolProfile } from "@/lib/services/system-settings";
 
-export async function GET(request: NextRequest) {
+async function GET_Handler(req: Request) {
   try {
     const profile = await getSchoolProfile();
     return NextResponse.json(profile);
   } catch (error) {
-    return handleApiError(error);
+    return NextResponse.json({ error: "Failed to fetch school profile" }, { status: 500 });
   }
 }
 
-export async function PUT(request: NextRequest) {
+async function PUT_Handler(req: Request) {
   try {
-    const body = await request.json();
+    const body = await req.json();
     const updatedProfile = await updateSchoolProfile(body);
     return NextResponse.json(updatedProfile);
   } catch (error) {
-    return handleApiError(error);
+    return NextResponse.json({ error: "Failed to update school profile" }, { status: 500 });
   }
 }
+
+export const GET = withAuth("READ", "SCHOOL_PROFILE", GET_Handler);
+export const PUT = withAuth("UPDATE", "SCHOOL_PROFILE", PUT_Handler);

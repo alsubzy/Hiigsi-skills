@@ -1,35 +1,25 @@
-// src/app/api/finance/fees/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { createOrUpdateFeeStructure, getFeeStructure } from '@/lib/services/financeService';
-import { handleApiError } from '@/lib/utils/handleApiError';
+import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/middleware/with-auth";
+import { getFeeCategories, createFeeCategory } from "@/lib/services/finance";
 
-export async function GET(request: NextRequest) {
+async function GET_Handler(req: Request) {
     try {
-        const { searchParams } = new URL(request.url);
-        const classId = searchParams.get('classId');
-        const academicYear = searchParams.get('academicYear');
-
-        if (!classId || !academicYear) {
-            return NextResponse.json({ message: 'classId and academicYear query parameters are required' }, { status: 400 });
-        }
-        
-        const feeStructure = await getFeeStructure(classId, academicYear);
-        if (!feeStructure) {
-            return NextResponse.json({ message: 'Fee structure not found' }, { status: 404 });
-        }
-        return NextResponse.json(feeStructure);
+        const categories = await getFeeCategories();
+        return NextResponse.json(categories);
     } catch (error) {
-        return handleApiError(error);
+        return NextResponse.json({ error: "Failed to fetch fee categories" }, { status: 500 });
     }
 }
 
-
-export async function POST(request: NextRequest) {
+async function POST_Handler(req: Request) {
     try {
-        const body = await request.json();
-        const feeStructure = await createOrUpdateFeeStructure(body);
-        return NextResponse.json(feeStructure, { status: 201 });
+        const body = await req.json();
+        const category = await createFeeCategory(body);
+        return NextResponse.json(category, { status: 201 });
     } catch (error) {
-        return handleApiError(error);
+        return NextResponse.json({ error: "Failed to create fee category" }, { status: 500 });
     }
 }
+
+export const GET = withAuth("READ", "FINANCE", GET_Handler);
+export const POST = withAuth("CREATE", "FINANCE", POST_Handler);

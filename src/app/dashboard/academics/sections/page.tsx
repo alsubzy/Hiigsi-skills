@@ -14,8 +14,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { sections as initialSections, academicClasses } from '@/lib/placeholder-data';
-import type { Section } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
 const sectionSchema = z.object({
@@ -29,47 +27,84 @@ type SectionFormValues = z.infer<typeof sectionSchema>;
 
 export default function SectionsPage() {
   const { toast } = useToast();
-  const [sections, setSections] = React.useState<Section[]>(initialSections);
+  const [sections, setSections] = React.useState<any[]>([]);
+  const [classes, setClasses] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [editingSection, setEditingSection] = React.useState<Section | null>(null);
+  const [editingSection, setEditingSection] = React.useState<any | null>(null);
 
   const form = useForm<SectionFormValues>({
     resolver: zodResolver(sectionSchema),
     defaultValues: { name: '', classId: '', capacity: 30, status: 'Active' },
   });
 
-  const getClassName = (classId: string) => {
-    return academicClasses.find(c => c.id === classId)?.name || 'N/A';
-  }
-
-  const onSubmit = (data: SectionFormValues) => {
-    if (editingSection) {
-      setSections(sections.map(s => s.id === editingSection.id ? { ...s, ...data } : s));
-      toast({ title: 'Section Updated', description: 'The section has been updated.' });
-    } else {
-      const newSection: Section = { id: `s${sections.length + 1}`, ...data };
-      setSections([newSection, ...sections]);
-      toast({ title: 'Section Created', description: 'A new section has been added.' });
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [secRes, classRes] = await Promise.all([
+        fetch('/api/academics/sections'),
+        fetch('/api/academics/classes')
+      ]);
+      if (secRes.ok && classRes.ok) {
+        setSections(await secRes.json());
+        setClasses(await classRes.json());
+      }
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setIsLoading(false);
     }
-    form.reset();
-    setIsDialogOpen(false);
-    setEditingSection(null);
   };
 
-  const handleEdit = (section: Section) => {
+  React.useEffect(() => {
+    fetchData();
+  }, []);
+
+  const getClassName = (classId: string) => {
+    return classes.find(c => c.id === classId)?.name || 'N/A';
+  }
+
+  const onSubmit = async (data: SectionFormValues) => {
+    try {
+      const method = editingSection ? 'PUT' : 'POST';
+      const url = editingSection ? `/api/academics/sections/${editingSection.id}` : '/api/academics/sections';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        toast({ title: editingSection ? 'Section Updated' : 'Section Created' });
+        fetchData();
+        form.reset();
+        setIsDialogOpen(false);
+        setEditingSection(null);
+      } else {
+        toast({ title: 'Error', description: 'Failed to save section', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save section', variant: 'destructive' });
+    }
+  };
+
+  const handleEdit = (section: any) => {
     setEditingSection(section);
     form.reset({
-        ...section,
-        capacity: section.capacity,
+      ...section,
+      status: section.status === 'Active' || section.status === 'Inactive' ? section.status : 'Active'
     });
     setIsDialogOpen(true);
   };
-  
+
   const handleAddNew = () => {
     setEditingSection(null);
     form.reset({ name: '', classId: '', capacity: 30, status: 'Active' });
     setIsDialogOpen(true);
   }
+
+  if (isLoading) return <div>Loading sections...</div>;
 
   return (
     <Card>
@@ -147,10 +182,10 @@ export default function SectionsPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Class / Grade</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
                       <SelectContent>
-                        {academicClasses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -174,7 +209,7 @@ export default function SectionsPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger></FormControl>
                       <SelectContent>
                         <SelectItem value="Active">Active</SelectItem>

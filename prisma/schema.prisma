@@ -1,5 +1,5 @@
 // E-school MS - Comprehensive Prisma Schema for PostgreSQL
-// Optimized for Production with Best Practices
+// Optimized for Production with Focus on Staff/Admin RBAC
 
 generator client {
   provider = "prisma-client-js"
@@ -7,6 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // ==========================================
@@ -98,8 +99,6 @@ model User {
   
   // Specific Entity Relations
   teacher         Teacher?
-  student         Student?
-  parent          Parent?
 
   @@index([email])
   @@index([clerkUserId])
@@ -117,11 +116,13 @@ model Role {
 
 model Permission {
   id              String           @id @default(cuid())
-  action          String           @unique // e.g., "USER_CREATE"
-  subject         String           // e.g., "USER"
+  action          String           // CREATE, READ, UPDATE, DELETE
+  subject         String           // e.g., "SCHOOL_PROFILE", "ACADEMIC_YEAR"
   roles           RolePermission[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+
+  @@unique([action, subject])
 }
 
 model RolePermission {
@@ -132,6 +133,8 @@ model RolePermission {
   permission      Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
 }
 
 model UserRole {
@@ -142,6 +145,8 @@ model UserRole {
   role            Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
 }
 
 model Session {
@@ -176,7 +181,6 @@ model AcademicYear {
   endDate         DateTime
   isCurrent       Boolean    @default(false)
   terms           Term[]
-  enrollments     Enrollment[]
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }
@@ -227,10 +231,8 @@ model Section {
   name            String
   classId         String
   class           Class        @relation(fields: [classId], references: [id])
-  students        Student[]
   classTeachers   ClassTeacher[]
   timetables      Timetable[]
-  enrollments     Enrollment[]
 
   @@unique([name, classId])
 }
@@ -243,7 +245,6 @@ model Subject {
   class           Class        @relation(fields: [classId], references: [id])
   teachers        Teacher[]    @relation("TeacherSubjects")
   examSubjects    ExamSubject[]
-  marks           Mark[]
   periods         TimetablePeriod[]
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
@@ -262,42 +263,6 @@ model Teacher {
   attendance      Attendance[]
 }
 
-model Student {
-  id              String          @id @default(cuid())
-  userId          String          @unique
-  user            User            @relation(fields: [userId], references: [id])
-  admissionNumber String          @unique
-  gender          Gender
-  dateOfBirth     DateTime
-  sectionId       String
-  section         Section         @relation(fields: [sectionId], references: [id])
-  parents         StudentParent[]
-  enrollments     Enrollment[]
-  attendance      AttendanceRecord[]
-  marks           Mark[]
-  reportCards     ReportCard[]
-  fees            StudentFee[]
-}
-
-model Parent {
-  id              String          @id @default(cuid())
-  userId          String          @unique
-  user            User            @relation(fields: [userId], references: [id])
-  profession      String?
-  students        StudentParent[]
-}
-
-model StudentParent {
-  id              String     @id @default(cuid())
-  studentId       String
-  parentId        String
-  relation        String?    // Father, Mother, Guardian
-  student         Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  parent          Parent     @relation(fields: [parentId], references: [id], onDelete: Cascade)
-
-  @@unique([studentId, parentId])
-}
-
 model ClassTeacher {
   id              String     @id @default(cuid())
   teacherId       String
@@ -306,20 +271,6 @@ model ClassTeacher {
   section         Section    @relation(fields: [sectionId], references: [id])
 
   @@unique([teacherId, sectionId])
-}
-
-model Enrollment {
-  id              String       @id @default(cuid())
-  studentId       String
-  academicYearId  String
-  sectionId       String
-  enrollmentDate  DateTime     @default(now())
-  status          String       @default("ACTIVE")
-  student         Student      @relation(fields: [studentId], references: [id])
-  academicYear    AcademicYear @relation(fields: [academicYearId], references: [id])
-  section         Section      @relation(fields: [sectionId], references: [id])
-
-  @@unique([studentId, academicYearId])
 }
 
 // ==========================================
@@ -361,21 +312,8 @@ model Attendance {
   date            DateTime           @default(now())
   recordedBy      String?            // Teacher ID
   teacher         Teacher?           @relation(fields: [recordedBy], references: [id])
-  records         AttendanceRecord[]
 
   @@index([date])
-}
-
-model AttendanceRecord {
-  id              String           @id @default(cuid())
-  attendanceId    String
-  studentId       String
-  status          AttendanceStatus @default(PRESENT)
-  remarks         String?
-  attendance      Attendance       @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
-  student         Student          @relation(fields: [studentId], references: [id])
-
-  @@unique([attendanceId, studentId])
 }
 
 // ==========================================
@@ -401,22 +339,8 @@ model ExamSubject {
   minMarks        Int
   exam            Exam       @relation(fields: [examId], references: [id])
   subject         Subject    @relation(fields: [subjectId], references: [id])
-  marks           Mark[]
 
   @@unique([examId, subjectId])
-}
-
-model Mark {
-  id              String      @id @default(cuid())
-  studentId       String
-  examSubjectId   String
-  subjectId       String
-  marksObtained   Float
-  student         Student     @relation(fields: [studentId], references: [id])
-  examSubject     ExamSubject @relation(fields: [examSubjectId], references: [id])
-  subject         Subject     @relation(fields: [subjectId], references: [id])
-
-  @@unique([studentId, examSubjectId])
 }
 
 model Grade {
@@ -426,19 +350,6 @@ model Grade {
   maxPercentage   Float
   point           Float?
   remarks         String?
-}
-
-model ReportCard {
-  id              String     @id @default(cuid())
-  studentId       String
-  academicYearId  String
-  termName        String
-  gpa             Float?
-  totalMarks      Float?
-  grade           String?
-  remarks         String?
-  student         Student    @relation(fields: [studentId], references: [id])
-  createdAt       DateTime   @default(now())
 }
 
 // ==========================================
@@ -460,37 +371,6 @@ model FeeStructure {
   frequency       String       // Monthly, Quarterly, Yearly
   class           Class        @relation(fields: [classId], references: [id])
   category        FeeCategory  @relation(fields: [categoryId], references: [id])
-  studentFees     StudentFee[]
-}
-
-model StudentFee {
-  id              String       @id @default(cuid())
-  studentId       String
-  feeStructureId  String
-  dueDate         DateTime
-  status          PaymentStatus @default(PENDING)
-  student         Student      @relation(fields: [studentId], references: [id])
-  feeStructure    FeeStructure @relation(fields: [feeStructureId], references: [id])
-  payments        Payment[]
-  invoice         Invoice?
-}
-
-model Payment {
-  id              String        @id @default(cuid())
-  studentFeeId    String
-  amount          Decimal       @db.Decimal(10, 2)
-  paymentDate     DateTime      @default(now())
-  paymentMethod   PaymentMethod
-  transactionRef  String?       @unique
-  studentFee      StudentFee    @relation(fields: [studentFeeId], references: [id])
-}
-
-model Invoice {
-  id              String     @id @default(cuid())
-  studentFeeId    String     @unique
-  invoiceNumber   String     @unique
-  issueDate       DateTime   @default(now())
-  studentFee      StudentFee @relation(fields: [studentFeeId], references: [id])
 }
 
 // ==========================================
@@ -501,7 +381,7 @@ model Announcement {
   id              String     @id @default(cuid())
   title           String
   content         String     @db.Text
-  targetAudience  String?    // ALL, TEACHERS, PARENTS, STUDENTS
+  targetAudience  String?    // ALL, TEACHERS, STAFF, ADMIN
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }
@@ -538,7 +418,7 @@ model AuditLog {
   userId          String?
   user            User?      @relation(fields: [userId], references: [id])
   action          String     // e.g., UPDATE, DELETE
-  resource        String     // e.g., STUDENT, GRADE
+  resource        String     // e.g., STAFF, GRADE
   resourceId      String?
   payload         Json?
   ipAddress       String?

@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,41 +11,85 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Upload } from 'lucide-react';
+import { Upload, Loader2 } from 'lucide-react';
 
 const profileSchema = z.object({
-  schoolName: z.string().min(3, 'School name is required'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().min(10, 'Phone number is required'),
-  address: z.string().min(5, 'Address is required'),
-  city: z.string().min(2, 'City is required'),
-  state: z.string().min(2, 'State is required'),
-  zip: z.string().min(5, 'ZIP code is required'),
-  mission: z.string().optional(),
+    schoolName: z.string().min(3, 'School name is required'),
+    email: z.string().email('Invalid email address'),
+    phone: z.string().min(10, 'Phone number is required'),
+    address: z.string().min(5, 'Address is required'),
+    website: z.string().url('Invalid website URL').optional().or(z.literal('')),
+    principalName: z.string().min(3, 'Principal name is required'),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function SchoolProfilePage() {
     const { toast } = useToast();
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [isSaving, setIsSaving] = React.useState(false);
+
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            schoolName: 'Hiigsi International School',
-            email: 'contact@hiigsi.edu.so',
-            phone: '+252 61 123 4567',
-            address: 'KM4, Wadajir District',
-            city: 'Mogadishu',
-            state: 'Banaadir',
-            zip: 'MG010',
-            mission: 'To provide a world-class education that empowers students with knowledge, skills, and values to thrive in a global society.',
+            schoolName: '',
+            email: '',
+            phone: '',
+            address: '',
+            website: '',
+            principalName: '',
         }
     });
 
-    function onSubmit(data: ProfileFormValues) {
-        toast({ title: 'Profile Updated', description: 'School profile has been saved successfully.' });
-        console.log(data);
+    const fetchData = React.useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const res = await fetch('/api/settings/school-profile');
+            if (res.ok) {
+                const data = await res.json();
+                if (data) {
+                    form.reset({
+                        schoolName: data.schoolName || '',
+                        email: data.email || '',
+                        phone: data.phone || '',
+                        address: data.address || '',
+                        website: data.website || '',
+                        principalName: data.principalName || '',
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("Failed to load profile:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [form]);
+
+    React.useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    async function onSubmit(data: ProfileFormValues) {
+        setIsSaving(true);
+        try {
+            const res = await fetch('/api/settings/school-profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            if (res.ok) {
+                toast({ title: 'Profile Updated', description: 'School profile has been saved successfully.' });
+            } else {
+                toast({ title: 'Error', description: 'Failed to update profile', variant: 'destructive' });
+            }
+        } catch (error) {
+            toast({ title: 'Error', description: 'Failed to update profile', variant: 'destructive' });
+        } finally {
+            setIsSaving(false);
+        }
     }
+
+    if (isLoading) return <div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin" /></div>;
 
     return (
         <Card>
@@ -68,31 +113,29 @@ export default function SchoolProfilePage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField control={form.control} name="schoolName" render={({ field }) => ( <FormItem><FormLabel>School Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
-                            <FormField control={form.control} name="email" render={({ field }) => ( <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                            <FormField control={form.control} name="schoolName" render={({ field }) => (<FormItem><FormLabel>School Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email Address</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
 
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField control={form.control} name="phone" render={({ field }) => ( <FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
-                             <FormField control={form.control} name="address" render={({ field }) => ( <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="website" render={({ field }) => (<FormItem><FormLabel>Website</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <FormField control={form.control} name="city" render={({ field }) => ( <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
-                            <FormField control={form.control} name="state" render={({ field }) => ( <FormItem><FormLabel>State/Region</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
-                            <FormField control={form.control} name="zip" render={({ field }) => ( <FormItem><FormLabel>ZIP/Postal Code</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )}/>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField control={form.control} name="principalName" render={({ field }) => (<FormItem><FormLabel>Principal Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="address" render={({ field }) => (<FormItem><FormLabel>Full Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
-                        
-                        <FormField control={form.control} name="mission" render={({ field }) => ( <FormItem><FormLabel>School Mission</FormLabel><FormControl><Textarea rows={4} {...field} /></FormControl><FormMessage /></FormItem> )}/>
 
                     </CardContent>
                     <CardFooter className="border-t px-6 py-4">
-                        <Button type="submit">Save Changes</Button>
+                        <Button type="submit" disabled={isSaving}>
+                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save Changes
+                        </Button>
                     </CardFooter>
                 </form>
             </Form>
         </Card>
     );
 }
-
-    
