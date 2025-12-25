@@ -35,8 +35,11 @@ export async function getUserPermissions(userId: string) {
         return [];
     }
 
-    // Check if user has Admin role - admins get all permissions
-    const isAdmin = user.roles.some(ur => ur.role.name.toLowerCase() === 'admin');
+    // Check if user has Admin or SUPER_ADMIN role - they get all permissions
+    const isAdmin = user.roles.some(ur => {
+      const roleName = ur.role.name.toLowerCase();
+      return roleName === 'admin' || roleName === 'super_admin';
+    });
 
     let permissions;
     if (isAdmin) {
@@ -97,5 +100,8 @@ export async function isUserAdmin(userId: string): Promise<boolean> {
         }
     });
 
-    return user?.roles.some(ur => ur.role.name.toLowerCase() === 'admin') || false;
+    return user?.roles.some(ur => {
+      const roleName = ur.role.name.toLowerCase();
+      return roleName === 'admin' || roleName === 'super_admin';
+    }) || false;
 }

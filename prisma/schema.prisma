@@ -91,6 +91,7 @@ model User {
   lastLogin       DateTime?
   isActive        Boolean          @default(true)
   deletedAt       DateTime?
+  createdBy       String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
@@ -98,11 +99,14 @@ model User {
   sessions        Session[]
   activityLogs    UserActivityLog[]
   auditLogs       AuditLog[]
+  createdByUser   User?            @relation("UserCreatedBy", fields: [createdBy], references: [id])
+  createdUsers    User[]          @relation("UserCreatedBy")
   
   // Specific Entity Relations
   teacher         Teacher?
 
   @@index([email])
+  @@index([createdBy])
 }
 
 model Role {

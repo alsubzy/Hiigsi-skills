@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { PrismaClient } from '@prisma/client';
-import { authOptions } from '@/lib/auth';
-
-const prisma = new PrismaClient();
+import { getCurrentUser } from '@/lib/auth-utils';
+import prisma from '@/lib/prisma';
 
 // Helper function to check if user has Super Admin role
 async function isSuperAdmin(userId: string): Promise<boolean> {
@@ -16,17 +13,18 @@ async function isSuperAdmin(userId: string): Promise<boolean> {
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    // Get the current user from JWT token
+    const currentUser = await getCurrentUser();
     
-    if (!session?.user?.id) {
+    if (!currentUser) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    // Check if the current user is a Super Admin
-    if (!(await isSuperAdmin(session.user.id))) {
+    // Check if the current user is a Super Admin or Admin
+    if (!(await isSuperAdmin(currentUser.userId))) {
       return NextResponse.json(
         { error: 'Forbidden: Only Super Admins can list users' },
         { status: 403 }
@@ -89,12 +87,11 @@ export async function GET(request: Request) {
             }
           }
         },
-        createdByUser: {
+        teacher: {
           select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true
+            employeeId: true,
+            qualification: true,
+            specialization: true,
           }
         }
       },

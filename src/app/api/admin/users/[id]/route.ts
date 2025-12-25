@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { PrismaClient } from '@prisma/client';
-import { authOptions } from '@/lib/auth';
-
-const prisma = new PrismaClient();
+import { getCurrentUser } from '@/lib/auth-utils';
+import prisma from '@/lib/prisma';
+import { updateUserRole, UserType } from '@/lib/services/userRoleService';
+import { updateUserWithTeacherSync } from '@/lib/services/userTeacherSyncService';
+import bcrypt from 'bcryptjs';
 
 // Helper function to check if user has Super Admin role
 async function isSuperAdmin(userId: string): Promise<boolean> {
@@ -19,17 +19,18 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    // Get the current user from JWT token
+    const currentUser = await getCurrentUser();
     
-    if (!session?.user?.id) {
+    if (!currentUser) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    // Check if the current user is a Super Admin
-    if (!(await isSuperAdmin(session.user.id))) {
+    // Check if the current user is a Super Admin or Admin
+    if (!(await isSuperAdmin(currentUser.userId))) {
       return NextResponse.json(
         { error: 'Forbidden: Only Super Admins can view user details' },
         { status: 403 }
@@ -38,7 +39,7 @@ export async function GET(
 
     const userId = params.id;
 
-    // Get user with their roles
+    // Get user with their roles and teacher info
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -46,7 +47,8 @@ export async function GET(
           include: {
             role: true
           }
-        }
+        },
+        teacher: true,
       }
     });
 
@@ -79,17 +81,18 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    // Get the current user from JWT token
+    const currentUser = await getCurrentUser();
     
-    if (!session?.user?.id) {
+    if (!currentUser) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    // Check if the current user is a Super Admin
-    if (!(await isSuperAdmin(session.user.id))) {
+    // Check if the current user is a Super Admin or Admin
+    if (!(await isSuperAdmin(currentUser.userId))) {
       return NextResponse.json(
         { error: 'Forbidden: Only Super Admins can update users' },
         { status: 403 }
@@ -104,12 +107,25 @@ export async function PUT(
       email, 
       phone, 
       status,
-      roleId
+      userType, // New: userType for role updates
+      roleId, // Legacy: still support for backward compatibility
+      password, // Optional: for password updates
+      employeeId,
+      qualification,
+      specialization,
     } = body;
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
+      include: {
+        teacher: true,
+        roles: {
+          include: {
+            role: true,
+          },
+        },
+      },
     });
 
     if (!existingUser) {
@@ -119,58 +135,50 @@ export async function PUT(
       );
     }
 
-    // Update user data
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        ...(firstName && { firstName }),
-        ...(lastName && { lastName }),
-        ...(email && { email }),
-        ...(phone !== undefined && { phone }),
-        ...(status && { status: status as any }),
-      }
-    });
-
-    // Update role if provided
-    if (roleId) {
-      // Remove existing roles (assuming one role per user for simplicity)
-      await prisma.userRole.deleteMany({
-        where: { userId }
-      });
-
-      // Add new role
-      await prisma.userRole.create({
-        data: {
-          userId,
-          roleId
-        }
-      });
+    // Determine userType - if not provided and user is a teacher, maintain TEACHER type
+    let finalUserType: UserType | undefined = userType as UserType | undefined;
+    if (!finalUserType && existingUser.roles.some(ur => ur.role.name === 'Teacher')) {
+      finalUserType = 'TEACHER';
     }
 
-    // Create audit log
-    await prisma.auditLog.create({
-      data: {
-        action: 'USER_UPDATED',
-        entityType: 'USER',
-        entityId: userId,
-        performedById: session.user.id,
-        metadata: {
-          updatedFields: Object.keys(body)
-        }
-      }
-    });
+    // Use the synchronization service to ensure all updates are atomic and synchronized
+    const userWithRelations = await updateUserWithTeacherSync(
+      userId,
+      {
+        firstName,
+        lastName,
+        email,
+        phone,
+        status: status as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | undefined,
+        userType: finalUserType,
+        password,
+        employeeId,
+        qualification,
+        specialization,
+      },
+      currentUser.userId
+    );
 
     // Return the updated user without sensitive data
-    const { passwordHash, ...userWithoutPassword } = updatedUser;
+    const { passwordHash, ...userWithoutPassword } = userWithRelations!;
     return NextResponse.json({
       success: true,
-      user: userWithoutPassword
+      message: 'User updated successfully',
+      user: userWithoutPassword,
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating user:', error);
+    
+    if (error.message && error.message.includes('Invalid userType')) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error.message || 'Internal server error' },
       { status: 500 }
     );
   }
@@ -181,17 +189,18 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    // Get the current user from JWT token
+    const currentUser = await getCurrentUser();
     
-    if (!session?.user?.id) {
+    if (!currentUser) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    // Check if the current user is a Super Admin
-    if (!(await isSuperAdmin(session.user.id))) {
+    // Check if the current user is a Super Admin or Admin
+    if (!(await isSuperAdmin(currentUser.userId))) {
       return NextResponse.json(
         { error: 'Forbidden: Only Super Admins can delete users' },
         { status: 403 }
@@ -200,49 +209,27 @@ export async function DELETE(
 
     const userId = params.id;
 
-    // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { id: userId }
+    // Use the synchronization service to ensure all related records are handled
+    const { deleteUserWithSync } = await import('@/lib/services/userTeacherSyncService');
+    await deleteUserWithSync(userId, currentUser.userId);
+
+    return NextResponse.json({
+      success: true,
+      message: 'User and all associated records deleted successfully'
     });
 
-    if (!existingUser) {
+  } catch (error: any) {
+    console.error('Error deleting user:', error);
+    
+    if (error.message === 'User not found') {
       return NextResponse.json(
-        { error: 'User not found' },
+        { error: error.message },
         { status: 404 }
       );
     }
 
-    // Soft delete the user
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        status: 'INACTIVE',
-        deletedAt: new Date()
-      }
-    });
-
-    // Create audit log
-    await prisma.auditLog.create({
-      data: {
-        action: 'USER_DELETED',
-        entityType: 'USER',
-        entityId: userId,
-        performedById: session.user.id,
-        metadata: {
-          email: existingUser.email
-        }
-      }
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: 'User deactivated successfully'
-    });
-
-  } catch (error) {
-    console.error('Error deleting user:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error.message || 'Internal server error' },
       { status: 500 }
     );
   }

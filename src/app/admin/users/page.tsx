@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { UserForm } from '@/components/admin/users/UserForm';
+import { useAuth } from '@/components/auth-provider';
 
 type User = {
   id: string;
@@ -27,6 +27,11 @@ type User = {
       name: string;
     };
   }[];
+  teacher?: {
+    employeeId: string;
+    qualification: string | null;
+    specialization: string | null;
+  } | null;
 };
 
 type Role = {
@@ -36,7 +41,7 @@ type Role = {
 };
 
 export default function UsersPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   
@@ -58,13 +63,16 @@ export default function UsersPage() {
   });
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      fetchUsers();
-      fetchRoles();
-    } else if (status === 'unauthenticated') {
-      router.push('/auth/login');
+    if (authLoading) return;
+    
+    if (!user) {
+      router.push('/sign-in');
+      return;
     }
-  }, [status, filters]);
+
+    fetchUsers();
+    fetchRoles();
+  }, [user, authLoading, filters]);
 
   const fetchUsers = async () => {
     try {
@@ -165,8 +173,12 @@ export default function UsersPage() {
     }));
   };
 
-  if (status === 'loading' || loading) {
+  if (authLoading || loading) {
     return <div className="flex items-center justify-center h-64">Loading...</div>;
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (

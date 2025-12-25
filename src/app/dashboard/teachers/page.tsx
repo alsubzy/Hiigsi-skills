@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { users as initialUsers } from '@/lib/placeholder-data';
+import { users as initialUsers } from '@/lib/data/placeholder-data';
 import type { User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 

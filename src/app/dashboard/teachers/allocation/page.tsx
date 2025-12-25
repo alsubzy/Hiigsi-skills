@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { subjects as allSubjects, users as allUsers, academicClasses } from '@/lib/placeholder-data';
+import { subjects as allSubjects, users as allUsers, academicClasses } from '@/lib/data/placeholder-data';
 import type { Subject, User } from '@/lib/types';
 
 export default function SubjectAllocationPage() {

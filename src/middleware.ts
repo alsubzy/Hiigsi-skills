@@ -61,9 +61,12 @@ export async function middleware(request: NextRequest) {
         const { payload } = await jwtVerify(token, secret);
 
         // Check if user is trying to access admin routes
-        if (pathname.startsWith('/dashboard/admin')) {
+        if (pathname.startsWith('/dashboard/admin') || pathname.startsWith('/api/admin')) {
             const roles = (payload.roles as string[]) || [];
-            const isAdmin = roles.some((role: string) => role.toLowerCase() === 'admin');
+            const isAdmin = roles.some((role: string) => {
+                const roleLower = role.toLowerCase();
+                return roleLower === 'admin' || roleLower === 'super_admin';
+            });
 
             if (!isAdmin) {
                 console.warn(`[MIDDLEWARE] Access Denied for ${pathname}. User roles: ${roles.join(', ')}`);

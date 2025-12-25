@@ -125,7 +125,10 @@ export async function POST(request: NextRequest) {
 
         // 7. Role Processing
         const roleNames = user.roles.map(ur => ur.role.name);
-        const isAdmin = roleNames.some(role => role.toLowerCase() === 'admin');
+        const isAdmin = roleNames.some(role => {
+            const roleLower = role.toLowerCase();
+            return roleLower === 'admin' || roleLower === 'super_admin';
+        });
 
         console.log(`[LOGIN] Success for ${email}. Roles: [${roleNames.join(', ')}]. Admin: ${isAdmin}`);
 

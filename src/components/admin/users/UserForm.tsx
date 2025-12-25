@@ -44,14 +44,19 @@ const userFormSchema = z.object({
     message: 'Please enter a valid email address.',
   }),
   phone: z.string().optional(),
-  roleId: z.string({
-    required_error: 'Please select a role.',
+  userType: z.enum(['TEACHER', 'ADMIN', 'ACCOUNTANT', 'STAFF'], {
+    required_error: 'Please select a user type.',
   }),
+  roleId: z.string().optional(), // Keep for backward compatibility but prefer userType
   status: z.enum(['ACTIVE', 'INACTIVE', 'SUSPENDED'], {
     required_error: 'Please select a status.',
   }),
   sendWelcomeEmail: z.boolean().optional(),
   temporaryPassword: z.string().optional(),
+  // Teacher-specific fields
+  employeeId: z.string().optional(),
+  qualification: z.string().optional(),
+  specialization: z.string().optional(),
 });
 
 type UserFormValues = z.infer<typeof userFormSchema>;
@@ -76,14 +81,31 @@ export function UserForm({ open, onOpenChange, onSuccess, user, roles }: UserFor
   const [generatePassword, setGeneratePassword] = useState(false);
   const [temporaryPassword, setTemporaryPassword] = useState('');
 
+  // Determine userType from existing user's role
+  const getUserTypeFromRole = (roles: any[]): 'TEACHER' | 'ADMIN' | 'ACCOUNTANT' | 'STAFF' | undefined => {
+    if (!roles || roles.length === 0) return undefined;
+    const roleName = roles[0]?.role?.name;
+    const roleNameToUserType: Record<string, 'TEACHER' | 'ADMIN' | 'ACCOUNTANT' | 'STAFF'> = {
+      'Teacher': 'TEACHER',
+      'Admin': 'ADMIN',
+      'Accountant': 'ACCOUNTANT',
+      'Staff': 'STAFF',
+    };
+    return roleNameToUserType[roleName];
+  };
+
   const defaultValues: Partial<UserFormValues> = {
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     email: user?.email || '',
     phone: user?.phone || '',
+    userType: getUserTypeFromRole(user?.roles) || undefined,
     roleId: user?.roles?.[0]?.role?.id || '',
     status: user?.status || 'ACTIVE',
     sendWelcomeEmail: false,
+    employeeId: user?.teacher?.employeeId || '',
+    qualification: user?.teacher?.qualification || '',
+    specialization: user?.teacher?.specialization || '',
   };
 
   const form = useForm<UserFormValues>({
@@ -95,8 +117,17 @@ export function UserForm({ open, onOpenChange, onSuccess, user, roles }: UserFor
   useEffect(() => {
     if (user) {
       form.reset({
-        ...user,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        userType: getUserTypeFromRole(user.roles),
         roleId: user.roles?.[0]?.role?.id || '',
+        status: user.status || 'ACTIVE',
+        sendWelcomeEmail: false,
+        employeeId: user.teacher?.employeeId || '',
+        qualification: user.teacher?.qualification || '',
+        specialization: user.teacher?.specialization || '',
       });
     } else {
       form.reset(defaultValues);
@@ -133,11 +164,36 @@ export function UserForm({ open, onOpenChange, onSuccess, user, roles }: UserFor
       const url = user ? `/api/admin/users/${user.id}` : '/api/admin/users';
       const method = user ? 'PUT' : 'POST';
       
-      const payload = {
-        ...data,
-        ...(generatePassword && { temporaryPassword }),
+      // Prepare payload - use temporaryPassword if generated, otherwise use password field
+      const password = generatePassword ? temporaryPassword : (data.temporaryPassword || '');
+      
+      const payload: any = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        userType: data.userType,
+        status: data.status,
         sendWelcomeEmail: data.sendWelcomeEmail || false,
       };
+
+      // Only include password for new users or if password is being changed
+      if (!user && password) {
+        payload.password = password;
+        payload.temporaryPassword = password;
+      }
+
+      // Include teacher-specific fields if userType is TEACHER
+      if (data.userType === 'TEACHER') {
+        if (data.employeeId) payload.employeeId = data.employeeId;
+        if (data.qualification) payload.qualification = data.qualification;
+        if (data.specialization) payload.specialization = data.specialization;
+      }
+
+      // For updates, include userType if it changed
+      if (user && data.userType) {
+        payload.userType = data.userType;
+      }
 
       const response = await fetch(url, {
         method,
@@ -330,25 +386,27 @@ export function UserForm({ open, onOpenChange, onSuccess, user, roles }: UserFor
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="roleId"
+                name="userType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role</FormLabel>
+                    <FormLabel>User Type</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a role" />
+                          <SelectValue placeholder="Select user type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {roles.map((role) => (
-                          <SelectItem key={role.id} value={role.id}>
-                            {role.name}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="TEACHER">Teacher</SelectItem>
+                        <SelectItem value="ADMIN">Admin</SelectItem>
+                        <SelectItem value="ACCOUNTANT">Accountant</SelectItem>
+                        <SelectItem value="STAFF">Staff</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
+                    <p className="text-xs text-muted-foreground">
+                      Role and permissions will be assigned automatically
+                    </p>
                   </FormItem>
                 )}
               />
@@ -376,6 +434,56 @@ export function UserForm({ open, onOpenChange, onSuccess, user, roles }: UserFor
                 )}
               />
             </div>
+
+            {/* Teacher-specific fields */}
+            {form.watch('userType') === 'TEACHER' && (
+              <div className="space-y-4 border-t pt-4">
+                <h4 className="text-sm font-medium">Teacher Information</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="employeeId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Employee ID</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Auto-generated if empty" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="qualification"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Qualification</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., B.Ed, M.A" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="specialization"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Specialization</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Mathematics, Science" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
             
             <DialogFooter className="mt-6">
               <Button 

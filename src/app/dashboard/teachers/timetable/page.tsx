@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { timetableData as initialTimetableData, timeSlots, users as allUsers } from '@/lib/placeholder-data';
+import { timetableData as initialTimetableData, timeSlots, users as allUsers } from '@/lib/data/placeholder-data';
 import type { TimetableEntry } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 

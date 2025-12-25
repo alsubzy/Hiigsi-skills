@@ -35,10 +35,11 @@ async function main() {
 
     // 2. Create Roles and Assign Permissions
     const roles = [
+        { name: "SUPER_ADMIN", description: "Full system access with user management capabilities" },
         { name: "Admin", description: "Full system access" },
         { name: "Teacher", description: "Academic and student management" },
-        { name: "Clerk", description: "General administrative tasks" },
         { name: "Accountant", description: "Financial management" },
+        { name: "Staff", description: "General administrative tasks and staff management" },
     ];
 
     for (const roleData of roles) {
@@ -51,25 +52,27 @@ async function main() {
         // Assign Permissions
         let rolePermissions: any[] = [];
 
-        if (role.name === "Admin") {
-            // Admin gets all permissions
+        if (role.name === "SUPER_ADMIN" || role.name === "Admin") {
+            // SUPER_ADMIN and Admin get all permissions
             rolePermissions = permissions;
         } else if (role.name === "Teacher") {
-            // Teacher permissions
+            // Teacher permissions: Academic modules with full access, student read access
             rolePermissions = permissions.filter((p) =>
-                ["ACADEMIC_YEAR", "CLASS_LEVEL", "SECTION", "SUBJECT"].includes(p.subject) &&
-                ["READ"].includes(p.action)
+                (["ACADEMIC_YEAR", "CLASS_LEVEL", "SECTION", "SUBJECT", "STUDENT"].includes(p.subject) &&
+                 ["CREATE", "READ", "UPDATE"].includes(p.action)) ||
+                (p.subject === "STUDENT" && p.action === "READ")
             );
-            // Teachers can read everything but only edit specific academic modules (example)
         } else if (role.name === "Accountant") {
-            // Accountant permissions
+            // Accountant permissions: Full finance access, read-only student access for billing
             rolePermissions = permissions.filter((p) =>
-                ["FINANCE"].includes(p.subject)
+                (["FINANCE"].includes(p.subject) && ["CREATE", "READ", "UPDATE", "DELETE"].includes(p.action)) ||
+                (p.subject === "STUDENT" && p.action === "READ")
             );
-        } else if (role.name === "Clerk") {
-            // Clerk permissions
+        } else if (role.name === "Staff") {
+            // Staff permissions: Administrative tasks, staff management, read access to most modules
             rolePermissions = permissions.filter((p) =>
-                ["STAFF", "SECTION", "SUBJECT"].includes(p.subject)
+                (["STAFF", "SECTION", "SUBJECT", "STUDENT", "ACADEMIC_YEAR", "CLASS_LEVEL"].includes(p.subject) &&
+                 ["CREATE", "READ", "UPDATE"].includes(p.action))
             );
         }
 
@@ -114,21 +117,21 @@ async function main() {
             }
         });
 
-        // Assign Admin role
-        const adminRole = await prisma.role.findUnique({
-            where: { name: "Admin" }
+        // Assign SUPER_ADMIN role
+        const superAdminRole = await prisma.role.findUnique({
+            where: { name: "SUPER_ADMIN" }
         });
 
-        if (adminRole) {
+        if (superAdminRole) {
             await prisma.userRole.create({
                 data: {
                     userId: adminUser.id,
-                    roleId: adminRole.id
+                    roleId: superAdminRole.id
                 }
             });
             console.log(`✅ Super Admin created successfully: ${adminEmail}`);
         } else {
-            console.error("❌ Admin role not found!");
+            console.error("❌ SUPER_ADMIN role not found!");
         }
     }
 
