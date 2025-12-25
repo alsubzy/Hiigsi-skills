@@ -83,6 +83,55 @@ async function main() {
         }
     }
 
+    // 3. Create Default Super Admin Account
+    console.log("Creating default Super Admin account...");
+
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@hiigsi.com";
+    const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123456";
+
+    // Check if admin already exists
+    const existingAdmin = await prisma.user.findUnique({
+        where: { email: adminEmail }
+    });
+
+    if (existingAdmin) {
+        console.log(`Admin user already exists: ${adminEmail}`);
+    } else {
+        // Hash password
+        const bcrypt = require('bcryptjs');
+        const passwordHash = await bcrypt.hash(adminPassword, 12);
+
+        // Create admin user
+        const adminUser = await prisma.user.create({
+            data: {
+                firstName: "Super",
+                lastName: "Admin",
+                email: adminEmail,
+                passwordHash: passwordHash,
+                emailVerified: true,
+                status: "ACTIVE",
+                isActive: true,
+            }
+        });
+
+        // Assign Admin role
+        const adminRole = await prisma.role.findUnique({
+            where: { name: "Admin" }
+        });
+
+        if (adminRole) {
+            await prisma.userRole.create({
+                data: {
+                    userId: adminUser.id,
+                    roleId: adminRole.id
+                }
+            });
+            console.log(`✅ Super Admin created successfully: ${adminEmail}`);
+        } else {
+            console.error("❌ Admin role not found!");
+        }
+    }
+
     console.log("Seeding completed successfully!");
 }
 

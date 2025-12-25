@@ -138,8 +138,13 @@ export default function DashboardLayout({
   const router = useRouter();
 
   const handleSignOut = async () => {
-    // Mock Logout
-    router.push('/sign-in');
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/sign-in');
+    } catch (error) {
+      console.error('Logout error:', error);
+      router.push('/sign-in');
+    }
   };
 
   if (isLoading) {

@@ -7,7 +7,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ==========================================
@@ -84,6 +83,10 @@ model User {
   email           String           @unique
   phone           String?          @unique
   passwordHash    String?
+  emailVerified   Boolean          @default(false)
+  verificationToken String?        @unique
+  resetPasswordToken String?       @unique
+  resetPasswordExpiry DateTime?
   status          UserStatus       @default(ACTIVE)
   lastLogin       DateTime?
   isActive        Boolean          @default(true)

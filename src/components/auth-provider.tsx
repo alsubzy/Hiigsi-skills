@@ -19,14 +19,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         async function fetchUser() {
             try {
-                const res = await fetch('/api/auth/me');
+                const res = await fetch('/api/auth/session');
                 if (res.ok) {
                     const data = await res.json();
                     setDbUser(data.user);
                     setPermissions(data.permissions);
+                } else if (res.status === 401) {
+                    // Not authenticated, clear state
+                    setDbUser(null);
+                    setPermissions([]);
                 }
             } catch (error) {
-                console.error('Failed to fetch user permissions:', error);
+                console.error('Failed to fetch user session:', error);
+                setDbUser(null);
+                setPermissions([]);
             } finally {
                 setIsLoading(false);
             }

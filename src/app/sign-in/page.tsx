@@ -37,14 +37,47 @@ export default function SignInPage() {
         setIsLoading(true);
 
         try {
-            console.log('Mock sign in for:', values.email);
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(values),
+            });
 
-            toast({ title: 'Success', description: 'Signed in successfully!' });
-            router.push('/dashboard');
+            let data;
+            const contentType = response.headers.get('content-type');
+
+            if (contentType && contentType.indexOf('application/json') !== -1) {
+                data = await response.json();
+            } else {
+                // Handle non-JSON response (likely a server crash or 500 page)
+                const text = await response.text();
+                console.error('Non-JSON response received:', text);
+                throw new Error(response.status === 500 ? 'Server internal error' : 'Invalid server response');
+            }
+
+            if (response.ok) {
+                console.log('Login successful, redirecting to:', data.redirectUrl);
+                toast({ title: 'Success', description: 'Signed in successfully!' });
+
+                // Use window.location for a hard refresh/navigation to ensure cookies are picked up
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    router.push('/dashboard');
+                }
+            } else {
+                console.error('Login failed:', data);
+                toast({
+                    title: 'Sign In Failed',
+                    description: data.error || 'Invalid email or password',
+                    variant: 'destructive',
+                });
+            }
         } catch (err: any) {
+            console.error('Login submission error:', err);
             toast({
                 title: 'Sign In Failed',
-                description: 'Invalid email or password',
+                description: err.message || 'An unexpected connection error occurred',
                 variant: 'destructive',
             });
         } finally {
