@@ -1,6 +1,6 @@
 // src/lib/data/academicData.ts
 import { AcademicClass, Section, Subject, AcademicYear, Timetable, Syllabus, CalendarEvent } from '@/lib/types';
-import { academicClasses as initialClasses, sections as initialSections, subjects as initialSubjects, calendarEvents as initialCalendarEvents } from './placeholder-data';
+import { academicClasses as initialClasses, sections as initialSections, subjects as initialSubjects, calendarEvents as initialCalendarEvents } from '../placeholder-data';
 
 let academicClasses: AcademicClass[] = [...initialClasses];
 let sections: Section[] = [...initialSections];

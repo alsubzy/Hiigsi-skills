@@ -20,6 +20,27 @@ import {
 } from 'lucide-react';
 import type { NavItem } from './types';
 
+// Re-export academic data
+export {
+  academicClasses,
+  sections,
+  initialAttendance,
+  students,
+  initialStudents,
+  allStudents,
+  users,
+  allUsers,
+  timeSlots,
+  subjects,
+  allSubjects,
+  announcements,
+  conversations,
+  notifications,
+  timetableData,
+  syllabusData,
+  calendarEvents
+} from './academic-data';
+
 
 export const navItems: NavItem[] = [
   {

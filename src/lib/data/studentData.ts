@@ -1,6 +1,6 @@
 // src/lib/data/studentData.ts
 import type { Student, Admission, Attendance, Promotion } from '@/lib/types';
-import { students as initialStudents } from './placeholder-data';
+import { students as initialStudents } from '../placeholder-data';
 
 let students: Student[] = [...initialStudents];
 let admissions: Admission[] = [];
