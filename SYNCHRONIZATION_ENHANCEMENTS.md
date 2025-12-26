@@ -319,3 +319,5 @@ The system now provides:
 
 All operations are now fully synchronized, ensuring data consistency across User and Teacher records at all times.
 
+
+
