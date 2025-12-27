@@ -1,20 +1,10 @@
-import { NextResponse } from 'next/server';
-import { clearAuthCookie } from '@/lib/auth-utils';
+import { NextResponse } from "next/server";
+import { clearAuthCookie } from "@/lib/auth-utils";
 
-export async function POST() {
-    try {
-        // Clear the auth cookie
-        await clearAuthCookie();
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-        return NextResponse.json({
-            success: true,
-            message: 'Logged out successfully',
-        });
-    } catch (error) {
-        console.error('Logout error:', error);
-        return NextResponse.json(
-            { error: 'An error occurred during logout' },
-            { status: 500 }
-        );
-    }
+export async function POST(req: Request) {
+    await clearAuthCookie();
+    return NextResponse.json({ success: true, message: "Logged out successfully" });
 }

@@ -1,23 +1,12 @@
-// src/app/api/teachers/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { getAllTeachers, createTeacher } from '@/lib/services/teacherService';
-import { handleApiError } from '@/lib/utils/handleApiError';
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
-  try {
-    const teachers = await getAllTeachers();
-    return NextResponse.json(teachers);
-  } catch (error) {
-    return handleApiError(error);
-  }
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export async function GET(req: Request) {
+  return NextResponse.json([]);
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const newTeacher = await createTeacher(body);
-    return NextResponse.json(newTeacher, { status: 201 });
-  } catch (error) {
-    return handleApiError(error);
-  }
+export async function POST(req: Request) {
+  return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
 }

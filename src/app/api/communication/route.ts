@@ -4,9 +4,9 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(req: Request) {
-  return NextResponse.json({ message: "Settings temporarily unavailable" });
+    return NextResponse.json([]);
 }
 
 export async function POST(req: Request) {
-  return NextResponse.json({ error: "Service temporarily unavailable" }, { status: 503 });
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
 }

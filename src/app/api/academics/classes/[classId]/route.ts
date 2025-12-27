@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { updateClass, deleteClass } from '@/lib/services/academicService';
 import { handleApiError } from '@/lib/utils/handleApiError';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: { classId: string } }

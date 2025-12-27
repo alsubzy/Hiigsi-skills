@@ -1,41 +1,28 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth-utils";
 
-export async function GET() {
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export async function GET(req: Request) {
     try {
-        // MOCK AUTH: In a real system, you would check session/token here.
-        // For now, we'll return a bypass admin user if it exists.
+        const payload = await getCurrentUser();
 
-        const dbUser = await prisma.user.findFirst({
-            where: { email: { contains: "admin" } }, // Simple heuristic for mock
-            include: {
-                roles: {
-                    include: {
-                        role: true,
-                    },
-                },
-            },
-        });
-
-        if (!dbUser) {
-            return NextResponse.json({ error: "No mock admin user found" }, { status: 404 });
+        if (!payload) {
+            return NextResponse.json({ user: null }, { status: 401 });
         }
 
-        const roles = ["Admin"];
-        const permissions = ["ALL_ACCESS"]; // Mock permissions
-
+        // Return payload directly to avoid DB connection issues during build
         return NextResponse.json({
             user: {
-                id: dbUser.id,
-                firstName: dbUser.firstName,
-                lastName: dbUser.lastName,
-                email: dbUser.email,
-                roles,
-            },
-            permissions,
+                id: payload.userId,
+                email: payload.email,
+                roles: payload.roles
+            }
         });
+
     } catch (error) {
-        console.error("Auth Me API Error:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        console.error("Auth/me error:", error);
+        return NextResponse.json({ error: "Internal Error" }, { status: 500 });
     }
 }

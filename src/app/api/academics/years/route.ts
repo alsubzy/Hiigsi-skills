@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAllAcademicYears, createAcademicYear } from '@/lib/services/academicService';
 import { handleApiError } from '@/lib/utils/handleApiError';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const years = await getAllAcademicYears();

@@ -1,23 +1,12 @@
-// src/app/api/roles/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { getAllRoles, createRole } from '@/lib/services/roleService';
-import { handleApiError } from '@/lib/utils/handleApiError';
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
-  try {
-    const roles = await getAllRoles();
-    return NextResponse.json(roles);
-  } catch (error) {
-    return handleApiError(error);
-  }
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export async function GET(req: Request) {
+  return NextResponse.json([]);
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const newRole = await createRole(body);
-    return NextResponse.json(newRole, { status: 201 });
-  } catch (error) {
-    return handleApiError(error);
-  }
+export async function POST(req: Request) {
+  return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
 }

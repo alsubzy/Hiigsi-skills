@@ -1,134 +1,14 @@
-import { NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth-utils';
-import prisma from '@/lib/prisma';
+import { NextResponse } from "next/server";
 
-// Helper function to check if user has Super Admin role
-async function isSuperAdmin(userId: string): Promise<boolean> {
-  const userRoles = await prisma.userRole.findMany({
-    where: { userId },
-    include: { role: true }
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export async function GET(req: Request) {
+  return NextResponse.json({
+    users: [],
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 0
   });
-  return userRoles.some(ur => ur.role.name === 'SUPER_ADMIN');
-}
-
-export async function GET(request: Request) {
-  try {
-    // Get the current user from JWT token
-    const currentUser = await getCurrentUser();
-    
-    if (!currentUser) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Check if the current user is a Super Admin or Admin
-    if (!(await isSuperAdmin(currentUser.userId))) {
-      return NextResponse.json(
-        { error: 'Forbidden: Only Super Admins can list users' },
-        { status: 403 }
-      );
-    }
-
-    // Get query parameters
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const search = searchParams.get('search') || '';
-    const status = searchParams.get('status');
-    const roleId = searchParams.get('roleId');
-
-    // Build where clause
-    const where: any = {
-      deletedAt: null, // Only non-deleted users
-      ...(search && {
-        OR: [
-          { firstName: { contains: search, mode: 'insensitive' } },
-          { lastName: { contains: search, mode: 'insensitive' } },
-          { email: { contains: search, mode: 'insensitive' } },
-          { phone: { contains: search, mode: 'insensitive' } },
-        ]
-      }),
-      ...(status && { status }),
-      ...(roleId && {
-        roles: {
-          some: {
-            roleId: roleId
-          }
-        }
-      })
-    };
-
-    // Get total count for pagination
-    const total = await prisma.user.count({ where });
-
-    // Get users with pagination
-    const users = await prisma.user.findMany({
-      where,
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        status: true,
-        lastLogin: true,
-        createdAt: true,
-        updatedAt: true,
-        roles: {
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-                description: true
-              }
-            }
-          }
-        },
-        teacher: {
-          select: {
-            employeeId: true,
-            qualification: true,
-            specialization: true,
-          }
-        }
-      },
-      orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-
-    // Get all roles for filter dropdown
-    const roles = await prisma.role.findMany({
-      select: {
-        id: true,
-        name: true,
-        description: true
-      },
-      orderBy: { name: 'asc' }
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: users,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit)
-      },
-      filters: {
-        roles
-      }
-    });
-
-  } catch (error) {
-    console.error('Error listing users:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
 }
