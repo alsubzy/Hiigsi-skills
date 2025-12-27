@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { verifyPassword, generateToken, setAuthCookie } from "@/lib/auth-utils";
 import { z } from "zod";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const runtime = 'nodejs';
 
 const loginSchema = z.object({
     email: z.string().email(),
@@ -13,6 +12,10 @@ const loginSchema = z.object({
 
 export async function POST(req: Request) {
     try {
+        // Import dynamically to prevent build-time execution
+        const { default: prisma } = await import("@/lib/prisma");
+        const { verifyPassword, generateToken, setAuthCookie } = await import("@/lib/auth-utils");
+
         const body = await req.json();
         const validation = loginSchema.safeParse(body);
 
@@ -39,9 +42,6 @@ export async function POST(req: Request) {
         }
 
         // Generate Token
-        // Assuming getUserRoles from auth-utils expected slightly different payload, 
-        // but generateToken expects { userId, email, roles }
-        // roles in payload defined as string[] in auth-utils.ts
         const roleNames = user.roles.map(ur => ur.role.name);
 
         const token = generateToken({
